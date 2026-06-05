@@ -236,7 +236,7 @@ jobs:
           echo "Build size: $BUILD_SIZE"
 
       - name: Upload build artifact
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v5
         with:
           path: ./dist
 

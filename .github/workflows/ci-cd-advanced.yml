@@ -110,7 +110,7 @@ jobs:
     needs: build-and-test
     environment:
       name: github-pages
-      url: https://family-ai.yyccube.com
+      url: https://family-ai.yyc3.vip
     runs-on: ubuntu-latest
     steps:
       - name: Deploy to GitHub Pages

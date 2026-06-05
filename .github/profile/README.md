@@ -11,10 +11,10 @@
 > ***All things converge in cloud pivot; Deep stacks ignite a new era of intelligence***
 
 [![YYC³ Website](https://img.shields.io/badge/🌐-yyccube.com-6366f1?logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjNmM2NmYxIj48cGF0aCBkPSJNMTIgMkw0IDd2MTBsOCA1IDgtNSA4LTVWN2wtOC01eiIvPjwvc3ZnPg==)](https://yyccube.com)
-[![Family AI](https://img.shields.io/badge/🤖-Family_AI-22c55e?logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjMjJjNTVlIj48Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSIxMCIvPjwvc3ZnPg==)](https://family-ai.yyccube.com)
+[![Family AI](https://img.shields.io/badge/🤖-Family_AI-22c55e?logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjMjJjNTVlIj48Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSIxMCIvPjwvc3ZnPg==)](https://family-ai.yyc3.vip)
 [![Docs](https://img.shields.io/badge/📖-docs.yyccube.com-06b6d4)](https://docs.yyccube.com)
 
-**[🏠 品牌官网](https://yyccube.com)** · **[🤖 Family AI](https://family-ai.yyccube.com)** · **[📖 文档中心](https://docs.yyccube.com)** · **[💬 Discussions](https://github.com/YanYuCloudCube/discussions)**
+**[🏠 品牌官网](https://yyccube.com)** · **[🤖 Family AI](https://family-ai.yyc3.vip)** · **[📖 文档中心](https://docs.yyccube.com)** · **[💬 Discussions](https://github.com/YanYuCloudCube/discussions)**
 
 </div>
 
@@ -67,7 +67,7 @@
 
 **🔗 快速链接**
 
-- 🌐 **在线体验**: https://family-ai.yyccube.com
+- 🌐 **在线体验**: https://family-ai.yyc3.vip
 - 📖 **文档中心**: https://docs.yyccube.com
 - 🛠️ **安装指南**: [INSTALL.md](https://github.com/YanYuCloudCube/YYC3-Family-AI/blob/main/INSTALL.md)
 - 🤝 **贡献指南**: [CONTRIBUTING.md](https://github.com/YanYuCloudCube/YYC3-Family-AI/blob/main/CONTRIBUTING.md)
@@ -135,7 +135,7 @@ CI/CD: GitHub Actions + Codecov
 | 域名 | 用途 | 状态 |
 |------|------|------|
 | [yyccube.com](https://yyccube.com) | 品牌官方主页 | ✅ 已上线 |
-| [family-ai.yyccube.com](https://family-ai.yyccube.com) | Family AI 项目主页 | ✅ 已上线 |
+| [family-ai.yyc3.vip](https://family-ai.yyc3.vip) | Family AI 项目主页 | ✅ 已上线 |
 | [docs.yyccube.com](https://docs.yyccube.com) | 文档中心 | ✅ 已上线 |
 
 ---

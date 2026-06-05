@@ -100,7 +100,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### 🌐 项目域名
 
-- **项目主页**: https://family-ai.yyccube.com
+- **项目主页**: https://family-ai.yyc3.vip
 - **文档中心**: https://docs.yyccube.com
 - **品牌官网**: https://yyccube.com
 - **GitHub 组织**: https://github.com/YanYuCloudCube
@@ -261,5 +261,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **维护团队**: YanYuCloudCube Team  
 **问题反馈**: [GitHub Issues](https://github.com/YanYuCloudCube/YYC3-Family-AI/issues)  
-**项目主页**: https://family-ai.yyccube.com  
+**项目主页**: https://family-ai.yyc3.vip  
 **品牌官网**: https://yyccube.com

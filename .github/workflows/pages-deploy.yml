@@ -81,7 +81,7 @@ jobs:
       - name: Build application
         run: pnpm build
         env:
-          VITE_APP_URL: https://family-ai.yyccube.com
+          VITE_APP_URL: https://family-ai.yyc3.vip
 
       - name: Setup Pages
         uses: actions/configure-pages@v6
@@ -110,5 +110,5 @@ jobs:
       - name: Deployment summary
         run: |
           echo "✅ Deployment successful!"
-          echo "🌐 Site URL: https://family-ai.yyccube.com"
+          echo "🌐 Site URL: https://family-ai.yyc3.vip"
           echo "📅 Deployed at: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"

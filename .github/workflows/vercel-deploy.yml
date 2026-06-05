@@ -28,7 +28,7 @@ jobs:
       - name: Build project
         run: pnpm build
         env:
-          VITE_APP_URL: https://family-ai.yyccube.com
+          VITE_APP_URL: https://family-ai.yyc3.vip
 
       - name: Deploy to Vercel
         uses: amondnet/vercel-action@v25
@@ -42,5 +42,5 @@ jobs:
         if: success()
         run: |
           echo "✅ Deployment to Vercel successful!"
-          echo "🌐 Site URL: https://family-ai.yyccube.com"
+          echo "🌐 Site URL: https://family-ai.yyc3.vip"
           echo "📅 Deployed at: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"

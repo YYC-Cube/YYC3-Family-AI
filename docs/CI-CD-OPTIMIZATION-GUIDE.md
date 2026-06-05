@@ -26,7 +26,7 @@ language: zh-CN
 基于 CI/CD 审核报告的建议，实施了以下优化功能：
 
 1. ✅ 构建缓存优化（预计减少构建时间 30%）
-2. ✅ 部署通知功能（Email 通知到 admin@0379.email）
+2. ✅ 部署通知功能（Email 通知到 <admin@0379.email>）
 3. ✅ 性能监控（构建时间趋势、部署成功率）
 4. ✅ 多环境支持（production / staging / development）
 
@@ -101,12 +101,12 @@ language: zh-CN
     from: YYC³ CI/CD <${{ secrets.SMTP_USERNAME }}>
     body: |
       Deployment Status: ${{ job.status }}
-      
+
       Branch: ${{ github.ref_name }}
       Commit: ${{ github.sha }}
       Triggered by: ${{ github.actor }}
       Workflow: ${{ github.workflow }}
-      
+
       View details: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 ```
 
@@ -125,6 +125,7 @@ language: zh-CN
 ### 通知内容
 
 通知包含以下信息：
+
 - 部署状态（成功/失败）
 - 分支名称
 - Commit SHA
@@ -203,8 +204,8 @@ language: zh-CN
 
 | 环境 | 分支 | 部署 URL | 用途 |
 |------|------|---------|------|
-| **production** | `main` | https://family-ai.yyccube.com | 生产环境 |
-| **staging** | `staging` | https://staging.family-ai.yyccube.com | 预发布环境 |
+| **production** | `main` | <https://family-ai.yyc3.vip> | 生产环境 |
+| **staging** | `staging` | <https://staging.family-ai.yyc3.vip> | 预发布环境 |
 | **development** | `develop` | 本地开发 | 开发环境 |
 
 ### 技术实现
@@ -229,9 +230,9 @@ determine-environment:
         else
           ENV="development"
         fi
-        
+
         echo "environment=$ENV" >> $GITHUB_OUTPUT
-        
+
         if [ "$ENV" == "production" ]; then
           echo "url=${{ env.PRODUCTION_URL }}" >> $GITHUB_OUTPUT
         elif [ "$ENV" == "staging" ]; then
@@ -272,6 +273,7 @@ workflow_dispatch:
 ```
 
 **使用方法**：
+
 1. 访问 GitHub Actions 页面
 2. 选择 "YYC3 Family AI - Multi-Environment CI/CD" workflow
 3. 点击 "Run workflow"
@@ -353,7 +355,7 @@ git push origin main
 
 # 自动触发：
 # - 构建和测试
-# - 部署到 https://family-ai.yyccube.com
+# - 部署到 https://family-ai.yyc3.vip
 # - 发送通知到 admin@0379.email
 ```
 
@@ -365,13 +367,13 @@ git push origin staging
 
 # 自动触发：
 # - 构建和测试
-# - 部署到 https://staging.family-ai.yyccube.com
+# - 部署到 https://staging.family-ai.yyc3.vip
 # - 发送通知到 admin@0379.email
 ```
 
 ### 手动触发部署
 
-1. 访问 https://github.com/YanYuCloudCube/YYC3-Family-AI/actions
+1. 访问 <https://github.com/YanYuCloudCube/YYC3-Family-AI/actions>
 2. 选择 "YYC3 Family AI - Multi-Environment CI/CD"
 3. 点击 "Run workflow"
 4. 选择目标环境
@@ -456,7 +458,7 @@ git push origin staging
 
 ### 3. 通知管理
 
-- 生产部署通知：admin@0379.email
+- 生产部署通知：<admin@0379.email>
 - 测试团队通知：可配置其他邮箱
 - 失败通知：立即处理
 
@@ -496,6 +498,6 @@ A: 确保并发配置正确，使用独立的分支。
 
 ---
 
-**文档维护**: YanYuCloudCube Team  
-**最后更新**: 2026-04-01  
+**文档维护**: YanYuCloudCube Team
+**最后更新**: 2026-04-01
 **相关文档**: [CI-CD 审核报告](CI-CD-AUDIT-REPORT.md)

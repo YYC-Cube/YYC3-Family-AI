@@ -12,17 +12,18 @@
  * @tags: routes,navigation,lazy-loading,iframe-detection
  */
 
+import { createElement, lazy, Suspense } from "react";
 import { createHashRouter, type RouteObject } from "react-router";
-import { lazy, createElement, Suspense } from "react";
 import HomePage from "./components/HomePage";
+import { LoadingSpinner } from "./components/ide/LoadingSpinner";
+import { errorReporting } from "./components/ide/services/ErrorReportingService";
 import NotFoundPage from "./components/NotFoundPage";
 import RouteErrorFallback from "./components/RouteErrorFallback";
-import { errorReporting } from "./components/ide/services/ErrorReportingService";
-import { LoadingSpinner } from "./components/ide/LoadingSpinner";
 
 // ── 路由懒加载 — 减少首屏 bundle 体积 ──
 const IDEPage = lazy(() => import("./components/IDEPage"));
 const AIChatPage = lazy(() => import("./components/AIChatPage"));
+const ChatPage = lazy(() => import("./components/ChatPage"));
 const TemplatesPage = lazy(() => import("./components/TemplatesPage"));
 const DocsPage = lazy(() => import("./components/DocsPage"));
 const SettingsPage = lazy(() => import("./components/SettingsPage"));
@@ -86,6 +87,12 @@ const routes: RouteObject[] = [
     Component: withSuspense(AIChatPage),
     errorElement,
     loader: navigationBreadcrumbLoader("/ai-chat", "AI 对话"),
+  },
+  {
+    path: "/chat",
+    Component: withSuspense(ChatPage),
+    errorElement,
+    loader: navigationBreadcrumbLoader("/chat", "富文本对话"),
   },
   {
     path: "/templates",

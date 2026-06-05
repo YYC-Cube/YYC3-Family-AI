@@ -1,11 +1,10 @@
-// @ts-nocheck
 /**
  * @file: CloudSyncService.ts
  * @description: 云端同步服务 - 支持跨设备数据同步、冲突解决、离线队列
  * @author: YanYuCloudCube Team <admin@0379.email>
- * @version: v2.0.0
+ * @version: v2.1.0
  * @created: 2026-03-19
- * @updated: 2026-04-05
+ * @updated: 2026-06-04
  * @status: production
  * @license: MIT
  * @copyright: Copyright (c) 2026 YanYuCloudCube Team
@@ -78,7 +77,7 @@ export class CloudSyncService {
   private syncInProgress = false;
   private apiConfig: CloudAPIConfig | null = null;
 
-  private constructor() {}
+  private constructor() { }
 
   static getInstance(): CloudSyncService {
     if (!CloudSyncService.instance) {
@@ -129,10 +128,10 @@ export class CloudSyncService {
       const response = await fetch(`${baseUrl}${endpoint}`, {
         method,
         headers: {
-          'Authorization': `Bearer ${apiKey}`,
-          'Content-Type': 'application/json',
-          'X-Client-Version': '2.0.0',
-          'X-Request-ID': `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+          "Authorization": `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+          "X-Client-Version": "2.0.0",
+          "X-Request-ID": `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
         },
         body: body ? JSON.stringify(body) : undefined,
         signal: controller.signal,
@@ -142,10 +141,10 @@ export class CloudSyncService {
 
       if (!response.ok) {
         if (response.status === 401) {
-          throw new Error('Authentication failed. Please check your API key.');
+          throw new Error("Authentication failed. Please check your API key.");
         }
         if (response.status === 429) {
-          throw new Error('Rate limit exceeded. Please try again later.');
+          throw new Error("Rate limit exceeded. Please try again later.");
         }
         if (response.status >= 500 && retryCount < retryAttempts) {
           await new Promise(resolve => setTimeout(resolve, retryDelay * (retryCount + 1)));
@@ -154,13 +153,14 @@ export class CloudSyncService {
         throw new Error(`API request failed: ${response.status} ${response.statusText}`);
       }
 
-      return await response.json();
-    } catch (error: any) {
+      return await response.json() as T;
+    } catch (error: unknown) {
       clearTimeout(timeoutId);
-      if (error.name === 'AbortError') {
-        throw new Error('Request timeout');
+      if (error instanceof DOMException && error.name === "AbortError") {
+        throw new Error("Request timeout");
       }
-      if (retryCount < retryAttempts && !error.message.includes('Authentication')) {
+      const errMsg = error instanceof Error ? error.message : String(error);
+      if (retryCount < retryAttempts && !errMsg.includes("Authentication")) {
         await new Promise(resolve => setTimeout(resolve, retryDelay * (retryCount + 1)));
         return this.apiRequest<T>(endpoint, method, body, retryCount + 1);
       }
@@ -453,8 +453,13 @@ export class CloudSyncService {
   async getStatus(): Promise<SyncStatus> {
     const db = await getDB();
 
-    const lastSyncSetting = await db.get("settings", "lastSyncTime");
-    const lastSyncTime = lastSyncSetting?.value || null;
+    let lastSyncTime: number | null = null;
+    try {
+      const lastSyncSetting = await db.get("settings", "lastSyncTime");
+      lastSyncTime = (lastSyncSetting as { value: number } | undefined)?.value ?? null;
+    } catch {
+      // settings store may not exist yet
+    }
 
     const files = await db.getAll("files");
     const pendingChanges = files.length;
@@ -464,6 +469,7 @@ export class CloudSyncService {
       pendingChanges,
       syncing: this.syncInterval !== null,
       error: null,
+      connectionStatus: this.syncInProgress ? "syncing" : "disconnected",
     };
   }
 

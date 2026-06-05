@@ -84,7 +84,7 @@ const DEFAULT_CONFIG: DegradationConfig = {
   healthCheckIntervalMs: 60000,
   recoveryCheckIntervalMs: 15000,
   maxLatencyMs: 30000,
-  degradationChain: ["zai-plan", "ollama"],
+  degradationChain: ["ollama", "zai-plan"], // 本地优先：YYC³ merged-v3 → 智谱云端
 };
 
 // ── AIDegradationService ──

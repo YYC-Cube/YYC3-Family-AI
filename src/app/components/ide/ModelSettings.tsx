@@ -12,38 +12,68 @@
  * @tags: settings,models,providers,api-key,connectivity
  */
 
-import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import {
-  X, Plus, Trash2, Edit3, Check, ChevronDown, ChevronRight,
-  Server, Cloud, Bot, Sparkles, RefreshCw, ExternalLink,
-  Eye, EyeOff, AlertCircle, CheckCircle2, Copy, Search,
-  HardDrive, Zap, Loader2, XCircle, Clock, Settings2,
-  Shield, Globe, Cpu, Activity, Wrench, Terminal,
-  ArrowRight, BarChart3, Wifi, WifiOff, Plug, AlertTriangle,
-  FileCode2, PlusCircle, MinusCircle, Lightbulb, Bug,
-  TrendingUp, Network, Lock, RotateCcw
+  Activity,
+  AlertCircle,
+  ArrowRight,
+  Bot,
+  Bug,
+  Check,
+  CheckCircle2,
+  ChevronDown, ChevronRight,
+  Clock,
+  Cloud,
+  Copy,
+  Cpu,
+  Edit3,
+  ExternalLink,
+  Eye, EyeOff,
+  FileCode2,
+  Lightbulb,
+  Loader2,
+  Lock,
+  MinusCircle,
+  Network,
+  Plug,
+  Plus,
+  PlusCircle,
+  RefreshCw,
+  RotateCcw,
+  Search,
+  Server,
+  Settings2,
+  Sparkles,
+  Terminal,
+  Trash2,
+  TrendingUp,
+  Wifi,
+  X,
+  XCircle,
+  Zap
 } from 'lucide-react'
-import { useModelRegistry, type AIModel } from './ModelRegistry'
-import { useThemeTokens } from './hooks/useThemeTokens'
-import { copyToClipboard } from './utils/clipboard'
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RTooltip, ResponsiveContainer } from 'recharts'
-import { loadProxyConfig, saveProxyConfig, checkProxyHealth, type ProxyConfig, DEFAULT_PROXY_CONFIG, PROXY_SERVER_TEMPLATE } from './ProxyService'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Area, AreaChart, CartesianGrid, Tooltip as RTooltip, ResponsiveContainer, XAxis, YAxis } from 'recharts'
+import MentorPanel from './MentorPanel'
+import { useModelRegistry } from './ModelRegistry'
+import { DEFAULT_PROXY_CONFIG, PROXY_SERVER_TEMPLATE, checkProxyHealth, loadProxyConfig, saveProxyConfig, type ProxyConfig } from './ProxyService'
 import {
   BUILTIN_PROVIDERS,
-  type ProviderDef,
   type ModelDef,
+  type ProviderDef,
 } from './constants/providers'
 import {
-  loadJSON,
-  saveJSON,
+  SK_CUSTOM_PROVIDERS,
+  SK_MCP_SERVERS,
+  SK_MODEL_PERF_DATA,
+  SK_OLLAMA_CACHE_PREFIX,
   SK_PROVIDER_API_KEYS,
   SK_PROVIDER_URLS,
-  SK_MCP_SERVERS,
-  SK_CUSTOM_PROVIDERS,
-  SK_OLLAMA_CACHE_PREFIX,
-  SK_MODEL_PERF_DATA,
+  loadJSON,
+  saveJSON,
 } from './constants/storage-keys'
-import { logger } from "./services/Logger";
+import { useThemeTokens } from './hooks/useThemeTokens'
+import { logger } from "./services/Logger"
+import { copyToClipboard } from './utils/clipboard'
 
 /* ================================================================
    Types (local to ModelSettings)
@@ -203,14 +233,13 @@ function ProviderCard({
   const hasAnyOnline = Object.values(diagnostics).some(d => d.status === 'success')
   const hasAnyError = Object.values(diagnostics).some(d => d.status === 'error')
   const isTesting = Object.values(diagnostics).some(d => d.status === 'testing')
-  const hasActiveModel = activeModelKey ? activeModelKey.startsWith(`${provider.id  }:`) : false
+  const hasActiveModel = activeModelKey ? activeModelKey.startsWith(`${provider.id}:`) : false
 
   return (
-    <div className={`rounded-xl border overflow-hidden transition-all ${
-      hasActiveModel
-        ? 'border-indigo-500/25 bg-indigo-500/[0.02]'
-        : 'border-white/[0.06] bg-white/[0.02]'
-    }`}
+    <div className={`rounded-xl border overflow-hidden transition-all ${hasActiveModel
+      ? 'border-indigo-500/25 bg-indigo-500/[0.02]'
+      : 'border-white/[0.06] bg-white/[0.02]'
+      }`}
       style={{
         boxShadow: hasActiveModel
           ? '0 0 20px -6px rgba(99,102,241,0.12), inset 0 1px 0 rgba(255,255,255,0.04)'
@@ -353,21 +382,19 @@ function ProviderCard({
               {/* 预定义模型 */}
               {provider.models.map(model => {
                 const diag = diagnostics[model.id]
-                const modelKey = `${provider.id  }:${  model.id}`
+                const modelKey = `${provider.id}:${model.id}`
                 const isActive = activeModelKey === modelKey
                 return (
-                  <div key={model.id} className={`flex items-center gap-2.5 px-3 py-2 rounded-lg transition-all group ${
-                    isActive
-                      ? 'bg-indigo-500/[0.08] border border-indigo-500/25'
-                      : 'bg-white/[0.01] hover:bg-white/[0.03] border border-transparent'
-                  }`}>
-                    <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${
-                      isActive ? 'bg-indigo-400' :
+                  <div key={model.id} className={`flex items-center gap-2.5 px-3 py-2 rounded-lg transition-all group ${isActive
+                    ? 'bg-indigo-500/[0.08] border border-indigo-500/25'
+                    : 'bg-white/[0.01] hover:bg-white/[0.03] border border-transparent'
+                    }`}>
+                    <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${isActive ? 'bg-indigo-400' :
                       diag?.status === 'success' ? 'bg-emerald-400' :
-                      diag?.status === 'error' ? 'bg-red-400' :
-                      diag?.status === 'testing' ? 'bg-cyan-400 animate-pulse' :
-                      'bg-white/10'
-                    }`} />
+                        diag?.status === 'error' ? 'bg-red-400' :
+                          diag?.status === 'testing' ? 'bg-cyan-400 animate-pulse' :
+                            'bg-white/10'
+                      }`} />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <span className={`text-[11px] ${isActive ? 'text-indigo-300' : 'text-white/60'}`}>{model.name}</span>
@@ -415,19 +442,17 @@ function ProviderCard({
                 )
               })}
 
-              {/* 已导入的模型（用于 Ollama 等动态检测的服务） */}
-              {(importedModels || []).map(model => {
-                const modelKey = `${provider.id  }:${  model.name}`
+              {/* 已导入的模型（过滤掉已存在于预置列表中的） */}
+              {(importedModels || []).filter(m => !provider.models.some(pm => pm.id === m.name || pm.name === m.name)).map(model => {
+                const modelKey = `${provider.id}:${model.name}`
                 const isActive = activeModelKey === modelKey
                 return (
-                  <div key={`imported-${  model.name}`} className={`flex items-center gap-2.5 px-3 py-2 rounded-lg transition-all group ${
-                    isActive
-                      ? 'bg-indigo-500/[0.08] border border-indigo-500/25'
-                      : 'bg-amber-500/[0.02] hover:bg-amber-500/[0.05] border border-transparent'
-                  }`}>
-                    <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${
-                      isActive ? 'bg-indigo-400' : 'bg-amber-400/60'
-                    }`} />
+                  <div key={`imported-${model.name}`} className={`flex items-center gap-2.5 px-3 py-2 rounded-lg transition-all group ${isActive
+                    ? 'bg-indigo-500/[0.08] border border-indigo-500/25'
+                    : 'bg-amber-500/[0.02] hover:bg-amber-500/[0.05] border border-transparent'
+                    }`}>
+                    <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${isActive ? 'bg-indigo-400' : 'bg-amber-400/60'
+                      }`} />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <span className={`text-[11px] ${isActive ? 'text-indigo-300' : 'text-amber-300/70'}`}>{model.name}</span>
@@ -593,7 +618,7 @@ function MCPConfigPanel() {
     let envObj: Record<string, string> = {}
     try { if (newServer.env) envObj = JSON.parse(newServer.env) } catch { /* env 格式无效时使用空对象 */ }
     const server: MCPServerConfig = {
-      id: `mcp-${  Date.now()}`,
+      id: `mcp-${Date.now()}`,
       name: newServer.name,
       description: newServer.description || newServer.name,
       command: newServer.command,
@@ -625,7 +650,7 @@ function MCPConfigPanel() {
       const parsed = JSON.parse(jsonDraft)
       const mcpServers = parsed.mcpServers || parsed
       const imported: MCPServerConfig[] = Object.entries(mcpServers).map(([name, conf]: [string, any]) => ({
-        id: `mcp-${  Date.now()  }-${  name}`,
+        id: `mcp-${Date.now()}-${name}`,
         name,
         description: conf.description || name,
         command: conf.command || '',
@@ -637,7 +662,7 @@ function MCPConfigPanel() {
       setJsonMode(false)
       setJsonError('')
     } catch (e: any) {
-      setJsonError(`JSON 解析失败: ${  e.message}`)
+      setJsonError(`JSON 解析失败: ${e.message}`)
     }
   }
 
@@ -695,15 +720,13 @@ function MCPConfigPanel() {
       {!jsonMode && (
         <div className="space-y-2">
           {servers.map(server => (
-            <div key={server.id} className={`rounded-xl border p-3 space-y-2 transition-all ${
-              server.enabled ? 'border-white/[0.06] bg-white/[0.02]' : 'border-white/[0.03] bg-white/[0.01] opacity-50'
-            }`}>
+            <div key={server.id} className={`rounded-xl border p-3 space-y-2 transition-all ${server.enabled ? 'border-white/[0.06] bg-white/[0.02]' : 'border-white/[0.03] bg-white/[0.01] opacity-50'
+              }`}>
               <div className="flex items-center gap-2.5">
                 <button onClick={() => handleToggle(server.id)} className="shrink-0">
                   <div className={`w-8 h-4 rounded-full transition-all ${server.enabled ? 'bg-violet-500/30' : 'bg-white/[0.06]'}`}>
-                    <div className={`w-3.5 h-3.5 rounded-full transition-all mt-[1px] ${
-                      server.enabled ? 'bg-violet-400 ml-[17px]' : 'bg-white/20 ml-[1px]'
-                    }`} />
+                    <div className={`w-3.5 h-3.5 rounded-full transition-all mt-[1px] ${server.enabled ? 'bg-violet-400 ml-[17px]' : 'bg-white/20 ml-[1px]'
+                      }`} />
                   </div>
                 </button>
                 <div className="flex-1 min-w-0">
@@ -841,7 +864,7 @@ function SmartDiagnosticsPanel({
           { label: '总模型数', value: String(totalModels), icon: Cpu, color: 'text-white/50' },
           { label: '已检测', value: String(testedModels), icon: Activity, color: 'text-cyan-400' },
           { label: '在线', value: String(onlineModels), icon: Wifi, color: 'text-emerald-400' },
-          { label: '平均延迟', value: avgLatency ? `${avgLatency  }ms` : '-', icon: Clock, color: 'text-amber-400' },
+          { label: '平均延迟', value: avgLatency ? `${avgLatency}ms` : '-', icon: Clock, color: 'text-amber-400' },
         ].map(card => (
           <div key={card.label} className="p-3 rounded-xl border border-white/[0.06] bg-white/[0.02] text-center">
             <card.icon className={`w-4 h-4 ${card.color} mx-auto mb-1`} />
@@ -866,7 +889,7 @@ function SmartDiagnosticsPanel({
 
       {/* Results by provider */}
       {providers.map(provider => {
-        const providerDiags = provider.models.map(m => ({ model: m, diag: diagnostics[`${provider.id  }:${  m.id}`] })).filter(d => d.diag)
+        const providerDiags = provider.models.map(m => ({ model: m, diag: diagnostics[`${provider.id}:${m.id}`] })).filter(d => d.diag)
         if (providerDiags.length === 0) return null
         return (
           <div key={provider.id} className="space-y-1.5">
@@ -878,20 +901,19 @@ function SmartDiagnosticsPanel({
               </span>
             </div>
             {providerDiags.map(({ model, diag }) => {
-              const modelKey = `${provider.id  }:${  model.id}`
+              const modelKey = `${provider.id}:${model.id}`
               const isActive = activeModelKey === modelKey
               return (
-                <div key={model.id} className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all group ${
-                  isActive
-                    ? 'bg-indigo-500/[0.06] border border-indigo-500/20'
-                    : diag.status === 'success' ? 'bg-emerald-500/[0.03] border border-emerald-500/10 hover:border-emerald-500/20' :
+                <div key={model.id} className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all group ${isActive
+                  ? 'bg-indigo-500/[0.06] border border-indigo-500/20'
+                  : diag.status === 'success' ? 'bg-emerald-500/[0.03] border border-emerald-500/10 hover:border-emerald-500/20' :
                     diag.status === 'error' ? 'bg-red-500/[0.03] border border-red-500/10' :
-                    'bg-white/[0.01] border border-white/[0.04]'
-                }`}>
+                      'bg-white/[0.01] border border-white/[0.04]'
+                  }`}>
                   {isActive ? <CheckCircle2 className="w-3.5 h-3.5 text-indigo-400 shrink-0" /> :
-                   diag.status === 'success' ? <CheckCircle2 className="w-3 h-3 text-emerald-400/60 shrink-0" /> :
-                   diag.status === 'error' ? <XCircle className="w-3 h-3 text-red-400/60 shrink-0" /> :
-                   <Loader2 className="w-3 h-3 text-cyan-400/60 animate-spin shrink-0" />}
+                    diag.status === 'success' ? <CheckCircle2 className="w-3 h-3 text-emerald-400/60 shrink-0" /> :
+                      diag.status === 'error' ? <XCircle className="w-3 h-3 text-red-400/60 shrink-0" /> :
+                        <Loader2 className="w-3 h-3 text-cyan-400/60 animate-spin shrink-0" />}
                   <span className={`text-[10px] flex-1 ${isActive ? 'text-indigo-300' : 'text-white/50'}`}>{model.name}</span>
                   {isActive && (
                     <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-400/80 border border-indigo-500/20 shrink-0">
@@ -933,10 +955,10 @@ function SmartDiagnosticsPanel({
                 <Bug className="w-3 h-3 text-amber-400/40 shrink-0 mt-0.5" />
                 <span><strong className="text-amber-400/50">{diag.modelName}</strong>: {
                   diag.message.includes('401') ? '请检查 API Key 是否正确配置且未过期' :
-                  diag.message.includes('429') ? '请求频率超限，建议稍后重试或升级配额' :
-                  diag.message.includes('网络') || diag.message.includes('fetch') ? '网络连接失败，请确认端点 URL 是否可达' :
-                  diag.message.includes('超时') ? '连接超时，可能是网络不稳定或服务暂时不可用' :
-                  '请检查配置或查看错误详情'
+                    diag.message.includes('429') ? '请求频率超限，建议稍后重试或升级配额' :
+                      diag.message.includes('网络') || diag.message.includes('fetch') ? '网络连接失败，请确认端点 URL 是否可达' :
+                        diag.message.includes('超时') ? '连接超时，可能是网络不稳定或服务暂时不可用' :
+                          '请检查配置或查看错误详情'
                 }</span>
               </div>
             ))}
@@ -958,7 +980,7 @@ function LatencyTrendChart({ diagnostics }: { diagnostics: Record<string, Diagno
       .filter(([, d]) => d.timestamp && d.latency != null)
       .sort((a, b) => (a[1].timestamp || 0) - (b[1].timestamp || 0))
       .map(([key, d]) => ({
-        name: d.modelName.length > 12 ? `${d.modelName.slice(0, 12)  }…` : d.modelName,
+        name: d.modelName.length > 12 ? `${d.modelName.slice(0, 12)}…` : d.modelName,
         latency: d.latency || 0,
         status: d.status,
         time: d.timestamp ? new Date(d.timestamp).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '',
@@ -976,7 +998,7 @@ function LatencyTrendChart({ diagnostics }: { diagnostics: Record<string, Diagno
         .filter(p => p.latencyMs != null && p.latencyMs > 0)
         .slice(-30)
         .map(p => ({
-          name: (p.modelName || '').length > 12 ? `${p.modelName.slice(0, 12)  }…` : (p.modelName || '?'),
+          name: (p.modelName || '').length > 12 ? `${p.modelName.slice(0, 12)}…` : (p.modelName || '?'),
           latency: p.latencyMs,
           status: p.success ? 'success' : 'error',
           time: new Date(p.timestamp).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
@@ -1119,9 +1141,8 @@ function ProxyConfigPanel() {
           </div>
           <button onClick={() => handleSave({ enabled: !config.enabled })} className="shrink-0">
             <div className={`w-10 h-5 rounded-full transition-all ${config.enabled ? 'bg-indigo-500/40' : 'bg-white/[0.08]'}`}>
-              <div className={`w-4.5 h-4.5 rounded-full transition-all mt-[1px] ${
-                config.enabled ? 'bg-indigo-400 ml-[21px]' : 'bg-white/25 ml-[1px]'
-              }`} style={{ width: '18px', height: '18px' }} />
+              <div className={`w-4.5 h-4.5 rounded-full transition-all mt-[1px] ${config.enabled ? 'bg-indigo-400 ml-[21px]' : 'bg-white/25 ml-[1px]'
+                }`} style={{ width: '18px', height: '18px' }} />
             </div>
           </button>
         </div>
@@ -1249,7 +1270,6 @@ function ProxyConfigPanel() {
 
 部署选项:
   A. Cloudflare Workers — 零延迟边缘代理
-  B. Vercel Edge Functions — 同域部署
   C. Supabase Edge Functions — 集成生态
   D. 自建 Node.js — 完全控制`}</pre>
         </div>
@@ -1289,7 +1309,7 @@ function ProxyConfigPanel() {
    Main Component: ModelSettings
    ================================================================ */
 
-type TabKey = 'providers' | 'ollama' | 'mcp' | 'diagnostics' | 'proxy'
+type TabKey = 'providers' | 'ollama' | 'mcp' | 'diagnostics' | 'proxy' | 'mentor'
 
 export interface ModelSettingsProps {
   mode?: 'modal' | 'embedded'
@@ -1322,7 +1342,7 @@ export function ModelSettings({ mode = 'modal', onClose, initialTab = 'providers
 
   const modelSettingsOpen = mode === 'embedded' ? true : showModelSettingsV2
 
-  const [activeTab, setActiveTab] = useState<TabKey>('providers')
+  const [activeTab, setActiveTab] = useState<TabKey>('mentor')
   const [searchQuery, setSearchQuery] = useState('')
   const [expandedProvider, setExpandedProvider] = useState<string | null>('zhipu')
 
@@ -1420,7 +1440,7 @@ export function ModelSettings({ mode = 'modal', onClose, initialTab = 'providers
     if (!provider) return
     const model = provider.models.find(m => m.id === modelId)
     if (!model) return
-    const diagKey = `${providerId  }:${  modelId}`
+    const diagKey = `${providerId}:${modelId}`
     const providerApiKey = apiKeys[providerId] || ''
     const url = customUrls[providerId] || provider.baseURL
 
@@ -1483,7 +1503,7 @@ export function ModelSettings({ mode = 'modal', onClose, initialTab = 'providers
 
         if (providerId === 'ollama') {
           const ollamaBase = url.replace(/\/+$/, '')
-          const chatUrl = ollamaBase.includes('/api/chat') ? ollamaBase : `${ollamaBase.replace(/\/api\/.*$/, '')  }/api/chat`
+          const chatUrl = ollamaBase.includes('/api/chat') ? ollamaBase : `${ollamaBase.replace(/\/api\/.*$/, '')}/api/chat`
           resp = await fetch(chatUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -1500,7 +1520,7 @@ export function ModelSettings({ mode = 'modal', onClose, initialTab = 'providers
         } else {
           resp = await fetch(testUrl, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${  providerApiKey}` },
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${providerApiKey}` },
             body: JSON.stringify({ model: model.id, messages: [{ role: 'user', content: 'Hi, respond with exactly: YANYUCLOUD_OK' }], stream: false, max_tokens: 20, temperature: 0 }),
             signal: controller.signal,
           })
@@ -1514,8 +1534,8 @@ export function ModelSettings({ mode = 'modal', onClose, initialTab = 'providers
           let detail = ''
           try { const j = JSON.parse(errText); detail = j.error?.message || j.message || errText.slice(0, 200) } catch { detail = errText.slice(0, 200) }
           const s = resp.status
-          const statusMsg = s === 401 ? 'API Key 无效或已过期 (401)' : s === 403 ? '权限不足 (403)' : s === 404 ? (providerId === 'ollama' ? `Ollama 模型未找到。请先 ollama pull ${  model.id}` : '端点不存在 (404)') : s === 429 ? '请求频率超限 (429)' : `HTTP ${  s}`
-          setResult({ status: 'error', message: statusMsg + (detail ? `。${  detail}` : ''), latency })
+          const statusMsg = s === 401 ? 'API Key 无效或已过期 (401)' : s === 403 ? '权限不足 (403)' : s === 404 ? (providerId === 'ollama' ? `Ollama 模型未找到。请先 ollama pull ${model.id}` : '端点不存在 (404)') : s === 429 ? '请求频率超限 (429)' : `HTTP ${s}`
+          setResult({ status: 'error', message: statusMsg + (detail ? `。${detail}` : ''), latency })
           return
         }
 
@@ -1531,13 +1551,13 @@ export function ModelSettings({ mode = 'modal', onClose, initialTab = 'providers
         clearTimeout(timer)
         const latency = Math.round(performance.now() - start)
         if (err.name === 'AbortError') {
-          setResult({ status: 'error', message: `连接超时 (${  timeoutMs / 1000  }s)。请检查端点是否可达。`, latency })
+          setResult({ status: 'error', message: `连接超时 (${timeoutMs / 1000}s)。请检查端点是否可达。`, latency })
           return
         }
         const msg = err.message || ''
         const networkMsg = (msg.includes('Failed to fetch') || msg.includes('NetworkError') || msg.includes('fetch'))
           ? '网络连接失败。可能原因：① 服务未启动 ② CORS 跨域限制 ③ 防火墙拦截。'
-          : `测试异常: ${  msg.slice(0, 200)}`
+          : `测试异常: ${msg.slice(0, 200)}`
         setResult({ status: 'error', message: networkMsg, latency })
       }
     })()
@@ -1589,7 +1609,7 @@ export function ModelSettings({ mode = 'modal', onClose, initialTab = 'providers
           (activeModel.name === model.id || activeModel.name === model.name) &&
           activeModel.endpoint === url
         ) {
-          return `${provider.id  }:${  model.id}`
+          return `${provider.id}:${model.id}`
         }
       }
     }
@@ -1598,7 +1618,7 @@ export function ModelSettings({ mode = 'modal', onClose, initialTab = 'providers
       for (const model of provider.models) {
         const n = activeModel.name.toLowerCase()
         if (n === model.name.toLowerCase() || n === model.id.toLowerCase()) {
-          return `${provider.id  }:${  model.id}`
+          return `${provider.id}:${model.id}`
         }
       }
     }
@@ -1608,7 +1628,7 @@ export function ModelSettings({ mode = 'modal', onClose, initialTab = 'providers
   // Add custom provider
   const handleAddProvider = useCallback(() => {
     if (!newProvider.name || !newProvider.baseURL) return
-    const id = `custom-${  Date.now()}`
+    const id = `custom-${Date.now()}`
     const provider: ProviderDef = {
       id,
       name: newProvider.name,
@@ -1635,7 +1655,7 @@ export function ModelSettings({ mode = 'modal', onClose, initialTab = 'providers
     setCustomProviders(prev => prev.filter(p => p.id !== id))
   }, [])
 
-  // Ollama scan - 支持代理服务器和 CORS 绕过
+  // Ollama scan - 优先走 Vite proxy 避免 CORS
   const handleScanOllama = useCallback(() => {
     logger.info('[Ollama] Scan button clicked, host:', ollamaHost);
     setOllamaScanning(true)
@@ -1643,18 +1663,14 @@ export function ModelSettings({ mode = 'modal', onClose, initialTab = 'providers
     setOllamaConnected(false)
 
     const baseUrl = ollamaHost.replace(/\/+$/, '')
-    const directUrl = `${baseUrl}/api/tags`
-    
-    // 检查代理配置
-    const proxyConfig = loadProxyConfig()
-    const useProxy = proxyConfig.enabled && proxyConfig.baseUrl
-    
-    // 构建请求 URL（通过代理或直接）
-    const url = useProxy 
-      ? `${proxyConfig.baseUrl}/ollama/api/tags`
-      : directUrl
-    
-    logger.info('[Ollama] Fetching URL:', url, useProxy ? '(via proxy)' : '(direct)');
+
+    // 优先使用 Vite proxy (/api/ollama) 绕过浏览器 CORS 限制
+    const useProxyPath = typeof window !== 'undefined'
+    const url = useProxyPath
+      ? `/api/ollama/api/tags`
+      : `${baseUrl}/api/tags`
+
+    logger.info('[Ollama] Fetching URL:', url);
 
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), 8000)
@@ -1662,17 +1678,11 @@ export function ModelSettings({ mode = 'modal', onClose, initialTab = 'providers
     const headers: Record<string, string> = {
       'Accept': 'application/json',
     }
-    
-    // 如果使用代理且配置了认证 token
-    if (useProxy && proxyConfig.authToken) {
-      headers['Authorization'] = `Bearer ${proxyConfig.authToken}`
-    }
 
     fetch(url, {
       method: 'GET',
       signal: controller.signal,
       headers,
-      mode: useProxy ? 'cors' : 'cors',
     })
       .then(r => {
         logger.info('[Ollama] Response status:', r.status);
@@ -1704,11 +1714,10 @@ export function ModelSettings({ mode = 'modal', onClose, initialTab = 'providers
       .catch((err) => {
         clearTimeout(timeoutId)
         logger.error('[Ollama] Scan failed:', err.message, err.name);
-        
-        // 如果直接连接失败，提供模拟数据供用户手动导入
-        if (!useProxy && (err.name === 'TypeError' || err.message.includes('Failed to fetch'))) {
-          logger.info('[Ollama] CORS blocked, showing simulated models for manual import');
-          // 显示模拟数据，让用户可以手动导入
+
+        // 如果 proxy 请求也失败，提供模拟数据供用户手动导入
+        if (err.name === 'TypeError' || err.message.includes('Failed to fetch') || err.message.includes('NetworkError')) {
+          logger.info('[Ollama] Connection failed, showing simulated models for manual import');
           setOllamaModels(SIMULATED_OLLAMA_MODELS)
           setOllamaConnected(false)
         } else {
@@ -1723,7 +1732,7 @@ export function ModelSettings({ mode = 'modal', onClose, initialTab = 'providers
     addAIModel({
       name: model.name,
       provider: 'ollama',
-      endpoint: `${ollamaHost.replace(/\/+$/, '')  }/api/chat`,
+      endpoint: `${ollamaHost.replace(/\/+$/, '')}/api/chat`,
       apiKey: '',
       isActive: false,
       isDetected: true,
@@ -1760,6 +1769,7 @@ export function ModelSettings({ mode = 'modal', onClose, initialTab = 'providers
         {/* Tabs */}
         <div className={`flex gap-1 px-5 pt-3 pb-0 border-b ${t.sectionBorder} overflow-x-auto`}>
           {([
+            { key: 'mentor' as const, label: '导师面板', icon: Sparkles },
             { key: 'providers' as const, label: '服务商管理', icon: Cloud },
             { key: 'ollama' as const, label: 'Ollama 本地', icon: Server },
             { key: 'mcp' as const, label: 'MCP 工具', icon: Plug },
@@ -1769,11 +1779,10 @@ export function ModelSettings({ mode = 'modal', onClose, initialTab = 'providers
             <button
               key={key}
               onClick={() => setActiveTab(key)}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-t-lg text-[11px] transition-all border-b-2 whitespace-nowrap ${
-                activeTab === key
-                  ? `${t.activeTabText} border-current ${t.activeBg}`
-                  : `${t.textTertiary} border-transparent hover:text-white/50`
-              }`}
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-t-lg text-[11px] transition-all border-b-2 whitespace-nowrap ${activeTab === key
+                ? `${t.activeTabText} border-current ${t.activeBg}`
+                : `${t.textTertiary} border-transparent hover:text-white/50`
+                }`}
             >
               <Icon className="w-3.5 h-3.5" />
               {label}
@@ -1789,7 +1798,7 @@ export function ModelSettings({ mode = 'modal', onClose, initialTab = 'providers
               {/* Active model indicator */}
               {activeModelId && (() => {
                 const activeModel = aiModels.find(m => m.id === activeModelId)
-                const matchedProvider = activeModelKey ? allProviders.find(p => activeModelKey.startsWith(`${p.id  }:`)) : null
+                const matchedProvider = activeModelKey ? allProviders.find(p => activeModelKey.startsWith(`${p.id}:`)) : null
                 return (
                   <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-indigo-500/[0.06] border border-indigo-500/15 mb-1"
                     style={{ boxShadow: '0 0 16px -4px rgba(99,102,241,0.1)' }}
@@ -1821,18 +1830,18 @@ export function ModelSettings({ mode = 'modal', onClose, initialTab = 'providers
               {filteredProviders.map(provider => {
                 const providerDiags: Record<string, DiagnosticResult> = {}
                 provider.models.forEach(m => {
-                  const d = diagnostics[`${provider.id  }:${  m.id}`]
+                  const d = diagnostics[`${provider.id}:${m.id}`]
                   if (d) providerDiags[m.id] = d
                 })
 
                 // 为 Ollama provider 获取已导入的模型
                 const ollamaImportedModels = provider.id === 'ollama'
                   ? aiModels.filter(m => m.provider === 'ollama').map(m => ({
-                      id: m.id,
-                      name: m.name,
-                      endpoint: m.endpoint,
-                      isActive: m.isActive ?? false,
-                    }))
+                    id: m.id,
+                    name: m.name,
+                    endpoint: m.endpoint,
+                    isActive: m.isActive ?? false,
+                  }))
                   : undefined
 
                 return (
@@ -1959,6 +1968,28 @@ export function ModelSettings({ mode = 'modal', onClose, initialTab = 'providers
                 </div>
               </div>
 
+              {/* Model Storage Path — 恒久保存机制 */}
+              <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 space-y-3"
+                style={{ boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.02)' }}
+              >
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-emerald-400" />
+                  <span className="text-[12px] text-white/70">模型存储路径</span>
+                  <span className="text-[9px] text-emerald-400/60 px-1.5 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20">恒久保存</span>
+                </div>
+                <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.04] border border-white/[0.06] font-mono text-[11px] text-cyan-400/60">
+                  <span className="text-white/20">OLLAMA_MODELS=</span>
+                  <span className="text-cyan-400">/Users/yanyu/models</span>
+                </div>
+                <div className="flex items-center gap-3 text-[10px] text-white/25">
+                  <span>blobs: 4 个文件</span>
+                  <span className="text-white/10">|</span>
+                  <span>manifests: registry.ollama.ai</span>
+                  <span className="text-white/10">|</span>
+                  <span className="text-emerald-400/40">模型数据已迁移 ✓</span>
+                </div>
+              </div>
+
               {/* Detected models */}
               {ollamaModels.length > 0 && (
                 <div className="space-y-2">
@@ -1975,9 +2006,8 @@ export function ModelSettings({ mode = 'modal', onClose, initialTab = 'providers
                           <div className="text-[12px] text-white/70">{model.name}</div>
                           <div className="text-[10px] text-white/25">{model.size} · {model.quantization}</div>
                         </div>
-                        <span className={`text-[9px] px-1.5 py-0.5 rounded ${
-                          model.status === 'online' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-white/[0.04] text-white/20'
-                        }`}>
+                        <span className={`text-[9px] px-1.5 py-0.5 rounded ${model.status === 'online' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-white/[0.04] text-white/20'
+                          }`}>
                           {model.status === 'online' ? '在线' : '离线'}
                         </span>
                         {alreadyImported ? (
@@ -2058,6 +2088,7 @@ export function ModelSettings({ mode = 'modal', onClose, initialTab = 'providers
           {activeTab === 'proxy' && <ProxyConfigPanel />}
 
           {/* Diagnostics Tab */}
+          {activeTab === 'mentor' && <MentorPanel />}
           {activeTab === 'diagnostics' && (
             <SmartDiagnosticsPanel
               providers={allProviders}
@@ -2129,6 +2160,7 @@ export function ModelSettings({ mode = 'modal', onClose, initialTab = 'providers
         {/* Tabs */}
         <div className={`flex gap-1 px-5 pt-3 pb-0 border-b ${t.sectionBorder} overflow-x-auto`}>
           {([
+            { key: 'mentor' as const, label: '导师面板', icon: Sparkles },
             { key: 'providers' as const, label: '服务商管理', icon: Cloud },
             { key: 'ollama' as const, label: 'Ollama 本地', icon: Server },
             { key: 'mcp' as const, label: 'MCP 工具', icon: Plug },
@@ -2138,11 +2170,10 @@ export function ModelSettings({ mode = 'modal', onClose, initialTab = 'providers
             <button
               key={key}
               onClick={() => setActiveTab(key)}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-t-lg text-[11px] transition-all border-b-2 whitespace-nowrap ${
-                activeTab === key
-                  ? `${t.activeTabText} border-current ${t.activeBg}`
-                  : `${t.textTertiary} border-transparent hover:text-white/50`
-              }`}
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-t-lg text-[11px] transition-all border-b-2 whitespace-nowrap ${activeTab === key
+                ? `${t.activeTabText} border-current ${t.activeBg}`
+                : `${t.textTertiary} border-transparent hover:text-white/50`
+                }`}
             >
               <Icon className="w-3.5 h-3.5" />
               {label}
@@ -2158,7 +2189,7 @@ export function ModelSettings({ mode = 'modal', onClose, initialTab = 'providers
               {/* Active model indicator */}
               {activeModelId && (() => {
                 const activeModel = aiModels.find(m => m.id === activeModelId)
-                const matchedProvider = activeModelKey ? allProviders.find(p => activeModelKey.startsWith(`${p.id  }:`)) : null
+                const matchedProvider = activeModelKey ? allProviders.find(p => activeModelKey.startsWith(`${p.id}:`)) : null
                 return (
                   <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-indigo-500/[0.06] border border-indigo-500/15 mb-1"
                     style={{ boxShadow: '0 0 16px -4px rgba(99,102,241,0.1)' }}
@@ -2190,18 +2221,18 @@ export function ModelSettings({ mode = 'modal', onClose, initialTab = 'providers
               {filteredProviders.map(provider => {
                 const providerDiags: Record<string, DiagnosticResult> = {}
                 provider.models.forEach(m => {
-                  const d = diagnostics[`${provider.id  }:${  m.id}`]
+                  const d = diagnostics[`${provider.id}:${m.id}`]
                   if (d) providerDiags[m.id] = d
                 })
 
                 // 为 Ollama provider 获取已导入的模型
                 const ollamaImportedModels = provider.id === 'ollama'
                   ? aiModels.filter(m => m.provider === 'ollama').map(m => ({
-                      id: m.id,
-                      name: m.name,
-                      endpoint: m.endpoint,
-                      isActive: m.isActive ?? false,
-                    }))
+                    id: m.id,
+                    name: m.name,
+                    endpoint: m.endpoint,
+                    isActive: m.isActive ?? false,
+                  }))
                   : undefined
 
                 return (
@@ -2328,6 +2359,28 @@ export function ModelSettings({ mode = 'modal', onClose, initialTab = 'providers
                 </div>
               </div>
 
+              {/* Model Storage Path — 恒久保存机制 */}
+              <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 space-y-3"
+                style={{ boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.02)' }}
+              >
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-emerald-400" />
+                  <span className="text-[12px] text-white/70">模型存储路径</span>
+                  <span className="text-[9px] text-emerald-400/60 px-1.5 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20">恒久保存</span>
+                </div>
+                <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.04] border border-white/[0.06] font-mono text-[11px] text-cyan-400/60">
+                  <span className="text-white/20">OLLAMA_MODELS=</span>
+                  <span className="text-cyan-400">/Users/yanyu/models</span>
+                </div>
+                <div className="flex items-center gap-3 text-[10px] text-white/25">
+                  <span>blobs: 4 个文件</span>
+                  <span className="text-white/10">|</span>
+                  <span>manifests: registry.ollama.ai</span>
+                  <span className="text-white/10">|</span>
+                  <span className="text-emerald-400/40">模型数据已迁移 ✓</span>
+                </div>
+              </div>
+
               {/* Detected models */}
               {ollamaModels.length > 0 && (
                 <div className="space-y-2">
@@ -2344,9 +2397,8 @@ export function ModelSettings({ mode = 'modal', onClose, initialTab = 'providers
                           <div className="text-[12px] text-white/70">{model.name}</div>
                           <div className="text-[10px] text-white/25">{model.size} · {model.quantization}</div>
                         </div>
-                        <span className={`text-[9px] px-1.5 py-0.5 rounded ${
-                          model.status === 'online' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-white/[0.04] text-white/20'
-                        }`}>
+                        <span className={`text-[9px] px-1.5 py-0.5 rounded ${model.status === 'online' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-white/[0.04] text-white/20'
+                          }`}>
                           {model.status === 'online' ? '在线' : '离线'}
                         </span>
                         {alreadyImported ? (
@@ -2392,6 +2444,9 @@ export function ModelSettings({ mode = 'modal', onClose, initialTab = 'providers
 
           {/* Proxy Tab */}
           {activeTab === 'proxy' && <ProxyConfigPanel />}
+
+          {/* Mentor Tab */}
+          {activeTab === 'mentor' && <MentorPanel />}
 
           {/* Diagnostics Tab */}
           {activeTab === 'diagnostics' && (

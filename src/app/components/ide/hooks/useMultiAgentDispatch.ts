@@ -106,13 +106,13 @@ const SYSTEM_PROMPTS: Record<AgentRole, string> = {
 // ── Provider Resolution ──
 
 function resolveProvider(): { provider: ProviderConfig; modelId: string } | null {
-  // Priority: DeepSeek > Zhipu > OpenAI > DashScope > Ollama > Custom
+  // Priority: Ollama(local) > DeepSeek > Zhipu > OpenAI > DashScope > Custom
   const priority: Array<{ providerId: string; defaultModel: string }> = [
+    { providerId: 'ollama', defaultModel: 'llama3' },
     { providerId: 'deepseek', defaultModel: 'deepseek-chat' },
     { providerId: 'zhipu', defaultModel: 'glm-4-flash' },
     { providerId: 'openai', defaultModel: 'gpt-4o-mini' },
     { providerId: 'dashscope', defaultModel: 'qwen-plus' },
-    { providerId: 'ollama', defaultModel: 'llama3' },
   ]
 
   for (const { providerId, defaultModel } of priority) {

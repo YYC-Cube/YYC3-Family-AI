@@ -822,7 +822,7 @@ YYC³ Family-AI 秉持以下开源理念:
 | 资源 | 链接 |
 |------|------|
 | GitHub 仓库 | https://github.com/YanYuCloudCube/YYC3-Family-AI |
-| 在线体验 | https://family-ai.yyccube.com |
+| 在线体验 | https://family-ai.yyc3.vip |
 | 问题跟踪 | https://github.com/YanYuCloudCube/YYC3-Family-AI/issues |
 | 讨论区 | https://github.com/YanYuCloudCube/YYC3-Family-AI/discussions |
 | Wiki 文档 | https://github.com/YanYuCloudCube/YYC3-Family-AI/wiki |

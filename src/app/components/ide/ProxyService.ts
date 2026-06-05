@@ -30,7 +30,6 @@
 //
 // 部署选项:
 //   A. Cloudflare Workers — 零延迟边缘代理, 免费 tier 可用
-//   B. Vercel Edge Functions — 与前端同域部署
 //   C. Supabase Edge Functions — 集成 Supabase 生态
 //   D. 自建 Node.js/Express 服务 — 完全控制
 //

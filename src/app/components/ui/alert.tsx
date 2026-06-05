@@ -8,21 +8,9 @@
  * @status: stable
  * @license: MIT
  * @copyright: Copyright (c) 2026 YanYuCloudCube Team
- * @tags: component,react,ui,ui
+ * @tags: ui,alert,display
  */
 
-/**
- * file: ui/alert.tsx
- * description: 警告框组件 - 包含 Alert、AlertTitle、AlertDescription，支持多种变体
- * author: YanYuCloudCube Team <admin@0379.email>
- * version: v1.0.0
- * created: 2026-03-19
- * updated: 2026-03-19
- * status: stable
- * license: MIT
- * copyright: Copyright (c) 2026 YanYuCloudCube Team
- * tags: ui,alert,notification,cva
- */
 
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";

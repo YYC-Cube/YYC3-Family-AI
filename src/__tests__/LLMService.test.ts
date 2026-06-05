@@ -106,7 +106,7 @@ describe("getProviderConfigs 验证", () => {
     const ollama = configs.find((p) => p.id === "ollama")!;
     expect(ollama.isLocal).toBe(true);
     expect(ollama.authType).toBe("none");
-    expect(ollama.models).toHaveLength(0); // 动态获取，无预设
+    expect(ollama.models).toHaveLength(2); // yyc3-merged-v3 + qwen3-coder-30b 预设模型
   });
 
   it("Zai-Plan 需要 bearer auth 且有 3 个模型", () => {

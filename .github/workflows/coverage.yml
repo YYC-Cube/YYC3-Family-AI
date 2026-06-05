@@ -44,7 +44,7 @@ jobs:
           pnpm exec vitest run --coverage --reporter=json --coverage.reporter=json-summary
           
       - name: 📈 Create coverage badge
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const fs = require('fs');
@@ -72,7 +72,7 @@ jobs:
             fs.writeFileSync('coverage/badge.json', JSON.stringify(badge));
 
       - name: 📤 Upload coverage to Codecov
-        uses: codecov/codecov-action@v6
+        uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage/lcov.info
@@ -83,7 +83,7 @@ jobs:
 
       - name: 📝 Comment PR with coverage
         if: github.event_name == 'pull_request'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const fs = require('fs');

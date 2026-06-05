@@ -8,21 +8,9 @@
  * @status: stable
  * @license: MIT
  * @copyright: Copyright (c) 2026 YanYuCloudCube Team
- * @tags: component,react,ui,ui
+ * @tags: ui,skeleton,loading
  */
 
-/**
- * file: ui/skeleton.tsx
- * description: 骨架屏组件 - 用于内容加载时的占位符，支持脉冲动画
- * author: YanYuCloudCube Team <admin@0379.email>
- * version: v1.0.0
- * created: 2026-03-19
- * updated: 2026-03-19
- * status: stable
- * license: MIT
- * copyright: Copyright (c) 2026 YanYuCloudCube Team
- * tags: ui,skeleton,loading,placeholder
- */
 
 import { cn } from "./utils";
 

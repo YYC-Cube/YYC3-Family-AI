@@ -4,155 +4,13 @@
   windows_subsystem = "windows"
 )]
 
-use notify::{Config, RecommendedWatcher, RecursiveMode, Watcher};
 use serde::{Deserialize, Serialize};
-use std::path::Path;
-use std::sync::mpsc::channel;
-use std::time::Duration;
-use tauri::Manager;
+use std::process::Command;
+use std::env;
+use tauri::api::notification::Notification;
 
-#[derive(Serialize, Deserialize)]
-struct FileWatchEvent {
-    path: String,
-    event_type: String,
-    timestamp: u64,
-}
-
-#[tauri::command]
-fn pick_file() -> Result<String, String> {
-    // 在浏览器环境中使用，这里仅作为示例
-    // 实际文件选择在前端通过 dialog API 实现
-    Ok("".to_string())
-}
-
-#[tauri::command]
-fn save_file(default_path: String) -> Result<String, String> {
-    // 在浏览器环境中使用，这里仅作为示例
-    // 实际文件保存在前端通过 dialog API 实现
-    Ok(default_path)
-}
-
-#[tauri::command]
-fn watch_file(path: String) -> Result<String, String> {
-    let (tx, rx) = channel();
-
-    // 创建文件监控器
-    let mut watcher = RecommendedWatcher::new(
-        move |res: Result<notify::Event, notify::Error>| {
-            if let Ok(event) = res {
-                let event_type = match event.kind {
-                    notify::EventKind::Create(_) => "created",
-                    notify::EventKind::Modify(_) => "modified",
-                    notify::EventKind::Remove(_) => "deleted",
-                    _ => return,
-                };
-
-                let event_data = FileWatchEvent {
-                    path: path.clone(),
-                    event_type: event_type.to_string(),
-                    timestamp: std::time::SystemTime::now()
-                        .duration_since(std::time::UNIX_EPOCH)
-                        .unwrap()
-                        .as_millis() as u64,
-                };
-
-                // 发送事件到前端
-                tx.send(event_data).unwrap();
-            }
-        },
-        Config::default(),
-    )
-    .map_err(|e| format!("Failed to create watcher: {}", e))?;
-
-    // 开始监控
-    watcher
-        .watch(Path::new(&path), RecursiveMode::NonRecursive)
-        .map_err(|e| format!("Failed to watch file: {}", e))?;
-
-    // 在后台线程中监听事件
-    std::thread::spawn(move || {
-        for event in rx {
-            // 发送事件到前端
-            // 这里需要通过 tauri 的事件系统发送
-        }
-    });
-
-    Ok("watch_started".to_string())
-}
-
-#[tauri::command]
-fn send_notification(title: String, body: String) -> Result<(), String> {
-    // 系统通知通过前端 API 实现
-    Ok(())
-}
-
-#[tauri::command]
-fn get_system_info() -> Result<SystemInfo, String> {
-    use sysinfo::{System, SystemExt};
-
-    let system = System::new_all();
-
-    Ok(SystemInfo {
-        os: system.name().unwrap_or("unknown".to_string()),
-        arch: std::env::consts::ARCH.to_string(),
-        version: system.os_version().unwrap_or("unknown".to_string()),
-        hostname: system.host_name().unwrap_or("unknown".to_string()),
-        username: whoami::username(),
-    })
-}
-
-#[tauri::command]
-fn exec_command(command: String, args: Vec<String>) -> Result<String, String> {
-    use std::process::Command;
-
-    let output = Command::new(&command)
-        .args(&args)
-        .output()
-        .map_err(|e| format!("Failed to execute command: {}", e))?;
-
-    Ok(String::from_utf8_lossy(&output.stdout).to_string())
-}
-
-#[tauri::command]
-fn open_url(url: String) -> Result<(), String> {
-    use std::process::Command;
-
-    #[cfg(target_os = "windows")]
-    let result = Command::new("cmd")
-        .args(&["/C", "start", "", &url])
-        .spawn();
-
-    #[cfg(target_os = "macos")]
-    let result = Command::new("open").arg(&url).spawn();
-
-    #[cfg(target_os = "linux")]
-    let result = Command::new("xdg-open").arg(&url).spawn();
-
-    result.map_err(|e| format!("Failed to open URL: {}", e))?;
-    Ok(())
-}
-
-#[tauri::command]
-fn read_clipboard() -> Result<String, String> {
-    use arboard::Clipboard;
-
-    let mut clipboard = Clipboard::new().map_err(|e| format!("Failed to init clipboard: {}", e))?;
-    let text = clipboard
-        .get_text()
-        .map_err(|e| format!("Failed to read clipboard: {}", e))?;
-    Ok(text)
-}
-
-#[tauri::command]
-fn write_clipboard(text: String) -> Result<(), String> {
-    use arboard::Clipboard;
-
-    let mut clipboard = Clipboard::new().map_err(|e| format!("Failed to init clipboard: {}", e))?;
-    clipboard
-        .set_text(&text)
-        .map_err(|e| format!("Failed to write clipboard: {}", e))?;
-    Ok(())
-}
+/// 统一模型存储路径 — 恒久保存机制
+const MODEL_STORAGE_PATH: &str = "/Users/yanyu/models";
 
 #[derive(Serialize, Deserialize)]
 struct SystemInfo {
@@ -163,18 +21,102 @@ struct SystemInfo {
     username: String,
 }
 
+#[derive(Serialize)]
+struct ModelStorageInfo {
+    path: String,
+    env_var: String,
+    blobs_exist: bool,
+    manifests_exist: bool,
+}
+
+#[tauri::command]
+fn get_system_info() -> Result<SystemInfo, String> {
+    Ok(SystemInfo {
+        os: std::env::consts::OS.to_string(),
+        arch: std::env::consts::ARCH.to_string(),
+        version: std::env::consts::ARCH.to_string(), // version approximation
+        hostname: hostname(),
+        username: whoami::username(),
+    })
+}
+
+#[tauri::command]
+fn get_model_storage_info() -> Result<ModelStorageInfo, String> {
+    let blobs_path = format!("{}/blobs", MODEL_STORAGE_PATH);
+    let manifests_path = format!("{}/manifests", MODEL_STORAGE_PATH);
+
+    Ok(ModelStorageInfo {
+        path: MODEL_STORAGE_PATH.to_string(),
+        env_var: "OLLAMA_MODELS".to_string(),
+        blobs_exist: std::path::Path::new(&blobs_path).exists(),
+        manifests_exist: std::path::Path::new(&manifests_path).exists(),
+    })
+}
+
+fn hostname() -> String {
+    #[cfg(target_os = "macos")]
+    {
+        Command::new("hostname")
+            .output()
+            .ok()
+            .and_then(|o| String::from_utf8(o.stdout).ok())
+            .map(|s| s.trim().to_string())
+            .unwrap_or("unknown".to_string())
+    }
+    #[cfg(not(target_os = "macos"))]
+    {
+        Command::new("hostname")
+            .output()
+            .ok()
+            .and_then(|o| String::from_utf8(o.stdout).ok())
+            .map(|s| s.trim().to_string())
+            .unwrap_or("unknown".to_string())
+    }
+}
+
+#[tauri::command]
+fn exec_command(command: String, args: Vec<String>) -> Result<String, String> {
+    let output = Command::new(&command)
+        .args(&args)
+        .output()
+        .map_err(|e| format!("Failed to execute command: {}", e))?;
+
+    Ok(String::from_utf8_lossy(&output.stdout).to_string())
+}
+
+#[tauri::command]
+fn open_url(url: String) -> Result<(), String> {
+    let result = match std::env::consts::OS {
+        "macos" => Command::new("open").arg(&url).spawn(),
+        "windows" => Command::new("cmd").args(["/C", "start", "", &url]).spawn(),
+        _ => Command::new("xdg-open").arg(&url).spawn(),
+    };
+
+    result.map_err(|e| format!("Failed to open URL: {}", e))?;
+    Ok(())
+}
+
+#[tauri::command]
+fn show_notification(app_handle: tauri::AppHandle, title: String, body: String) -> Result<(), String> {
+    Notification::new(&app_handle.config().tauri.bundle.identifier)
+        .title(title)
+        .body(body)
+        .show()
+        .map_err(|e| format!("Failed to send notification: {}", e))
+}
+
 fn main() {
+    // 设置统一模型存储路径 — 恒久保存机制
+    // 确保 Ollama 子进程继承此环境变量，使模型存储在 /Users/yanyu/models
+    env::set_var("OLLAMA_MODELS", MODEL_STORAGE_PATH);
+
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
-            pick_file,
-            save_file,
-            watch_file,
-            send_notification,
             get_system_info,
+            get_model_storage_info,
             exec_command,
             open_url,
-            read_clipboard,
-            write_clipboard,
+            show_notification,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

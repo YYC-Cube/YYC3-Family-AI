@@ -118,7 +118,7 @@ pnpm test -- src/__tests__/LLMService.test.ts
 ```env
 # 应用配置
 VITE_APP_TITLE=YYC³ Family AI
-VITE_APP_URL=https://family-ai.yyccube.com
+VITE_APP_URL=https://family-ai.yyc3.vip
 
 # API 配置（可选，用于云端 LLM）
 VITE_OPENAI_API_KEY=your-api-key-here
@@ -166,7 +166,7 @@ docker run -d \
 
 不想本地安装？直接访问在线版本：
 
-- **项目主页**: https://family-ai.yyccube.com
+- **项目主页**: https://family-ai.yyc3.vip
 - **文档中心**: https://docs.yyccube.com
 - **品牌官网**: https://yyccube.com
 

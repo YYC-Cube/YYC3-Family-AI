@@ -11,13 +11,19 @@
  * @tags: ai,prompt,system-prompt,intent-detection
  */
 
-import { type ProjectContext, compressContext } from "./ContextCollector";
 import {
+  buildMCPToolsDescription,
   buildRulesPromptInjection,
   buildSkillsPromptInjection,
-  buildMCPToolsDescription,
   getActiveAgentPrompt,
 } from "../SettingsBridge";
+import { matchSkills } from "./AIFamilySkills";
+import {
+  buildAgentPersona,
+  buildRoutingSummary,
+  routeIntent,
+} from "./AgentIntentRouter";
+import { compressContext, type ProjectContext } from "./ContextCollector";
 
 // ── 意图类型 ──
 
@@ -176,14 +182,37 @@ export function buildSystemPrompt(
   options?: {
     maxContextTokens?: number;
     customInstructions?: string;
+    /** 用户原始消息 — 用于 AI Family Agent 路由匹配 */
+    userMessage?: string;
   },
 ): string {
   const parts: string[] = [BASE_ROLE];
 
+  // ── AI Family Agent 路由 + 人设注入 (新增) ──
+  if (options?.userMessage) {
+    const routing = routeIntent(options.userMessage, intent);
+    const persona = buildAgentPersona(routing.primaryAgent);
+    parts.push(persona);
+
+    // 注入匹配的 IDE Skills
+    const skills = matchSkills(options.userMessage, intent);
+    if (skills.length > 0) {
+      const skillsDesc = skills.slice(0, 3)
+        .map((s) => `- **${s.name}**: ${s.description}`)
+        .join('\n');
+      parts.push(`## 🔧 可用技能\n\n${skillsDesc}`);
+    }
+
+    // 调试日志
+    if (typeof window !== 'undefined') {
+      console.log(buildRoutingSummary(options.userMessage, intent, routing));
+    }
+  }
+
   // 注入智能体角色提示词 (来自 Settings Store)
   const agentPrompt = getActiveAgentPrompt();
   if (agentPrompt) {
-    parts.push(`## 智能体角色\n\n${  agentPrompt}`);
+    parts.push(`## 智能体角色\n\n${agentPrompt}`);
   }
 
   // 添加意图指令
@@ -198,7 +227,7 @@ export function buildSystemPrompt(
   if (context) {
     const maxTokens = options?.maxContextTokens ?? 6000;
     const contextStr = compressContext(context, maxTokens);
-    parts.push(`## 项目上下文\n\n${  contextStr}`);
+    parts.push(`## 项目上下文\n\n${contextStr}`);
   }
 
   // 注入编码规则 (来自 Settings Store → 规则管理)
@@ -221,7 +250,7 @@ export function buildSystemPrompt(
 
   // 添加自定义指令
   if (options?.customInstructions) {
-    parts.push(`## 额外指令\n\n${  options.customInstructions}`);
+    parts.push(`## 额外指令\n\n${options.customInstructions}`);
   }
 
   // 技术栈提示
@@ -257,7 +286,10 @@ export function buildChatMessages(
   },
 ): LLMReadyMessage[] {
   const intent = detectIntent(userMessage);
-  const systemPrompt = buildSystemPrompt(intent, context, options);
+  const systemPrompt = buildSystemPrompt(intent, context, {
+    ...options,
+    userMessage,
+  });
 
   const messages: LLMReadyMessage[] = [
     { role: "system", content: systemPrompt },

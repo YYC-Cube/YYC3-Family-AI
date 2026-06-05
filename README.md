@@ -32,7 +32,7 @@
 [![GitHub Forks](https://img.shields.io/github/forks/YanYuCloudCube/YYC3-Family-AI?style=social)](https://github.com/YanYuCloudCube/YYC3-Family-AI/network/members)
 [![GitHub Issues](https://img.shields.io/github/issues/YanYuCloudCube/YYC3-Family-AI)](https://github.com/YanYuCloudCube/YYC3-Family-AI/issues)
 
-**[🌐 项目主页](https://family-ai.yyccube.com)** · **[📖 文档中心](https://docs.yyccube.com)** · **[🏠 品牌官网](https://yyccube.com)** · **[🐛 报告问题](https://github.com/YanYuCloudCube/YYC3-Family-AI/issues)** · **[💡 功能建议](https://github.com/YanYuCloudCube/YYC3-Family-AI/issues)**
+**[🌐 项目主页](https://family-ai.yyc3.vip)** · **[📖 文档中心](https://docs.yyccube.com)** · **[🏠 品牌官网](https://yyccube.com)** · **[🐛 报告问题](https://github.com/YanYuCloudCube/YYC3-Family-AI/issues)** · **[💡 功能建议](https://github.com/YanYuCloudCube/YYC3-Family-AI/issues)**
 
 </div>
 
@@ -78,11 +78,13 @@ YYC³（YanYuCloudCube）Family AI 是一个**开源本地优先**的 AI 智能�
 打造下一代 **AI 驱动的开源本地开发环境**，让每一位开发者都能享受 AI 带来的编程效率提升，同时**完全掌控自己的数据**。
 
 **核心理念**：
+
 - **五高**：高可用性、高性能、高安全性、高扩展性、高可维护性
 - **五标**：标准化、规范化、自动化、智能化、可视化
 - **五化**：流程化、文档化、工具化、数字化、生态化
 
 **技术架构**：
+
 - 采用**三层混合存储架构**（IndexedDB + localStorage + Zustand）
 - 基于**React 18** 和 **TypeScript 5.8** 构建现代化前端
 - 集成 **Zustand** 状态管理和 **react-dnd** 拖拽系统
@@ -93,6 +95,7 @@ YYC³（YanYuCloudCube）Family AI 是一个**开源本地优先**的 AI 智能�
 - 完整的 **CI/CD 流水线**（GitHub Actions + 4 级 Workflow）
 
 **适用场景**：
+
 - 快速原型开发
 - 代码辅助生成
 - 实时协作编程
@@ -114,16 +117,18 @@ YYC³（YanYuCloudCube）Family AI 是一个**开源本地优先**的 AI 智能�
 
 ## 项目仓库
 
-**GitHub 仓库地址**：https://github.com/YanYuCloudCube/YYC3-Family-AI.git
+**GitHub 仓库地址**：<https://github.com/YanYuCloudCube/YYC3-Family-AI.git>
 
-**组织主页**：https://github.com/YanYuCloudCube
+**组织主页**：<https://github.com/YanYuCloudCube>
 
 **项目域名**：
-- 🌐 **项目主页**: https://family-ai.yyccube.com
-- 📖 **文档中心**: https://docs.yyccube.com
-- 🏠 **品牌官网**: https://yyccube.com
+
+- 🌐 **项目主页**: <https://family-ai.yyc3.vip>
+- 📖 **文档中心**: <https://docs.yyccube.com>
+- 🏠 **品牌官网**: <https://yyccube.com>
 
 **克隆仓库**：
+
 ```bash
 git clone https://github.com/YanYuCloudCube/YYC3-Family-AI.git
 cd YYC3-Family-AI
@@ -358,6 +363,7 @@ YYC3 采用**三层混合存储架构**，根据数据类型和访问模式选�
 **命名格式：** `yyc3_{module}_{key}`
 
 **示例：**
+
 ```typescript
 // 主题系统
 yyc3-theme
@@ -426,6 +432,7 @@ yyc3_project_{projectId}
 **数据库名称：** `YYC3FileDB`
 
 **主要对象存储：**
+
 - `fileContents`: 文件内容（路径 → 内容映射）
 - `fileTree`: 文件树结构
 - `tabs`: 打开的标签页
@@ -440,6 +447,7 @@ yyc3_project_{projectId}
 ### AI 代码生成
 
 完整的 AI 代码生成流水线，支持：
+
 - 上下文收集与压缩
 - 智能提示词构建
 - 流式 LLM 响应
@@ -447,6 +455,7 @@ yyc3_project_{projectId}
 - Diff 预览确认
 
 **Pipeline 流程：**
+
 ```
 用户输入
   ↓
@@ -466,6 +475,7 @@ DiffPreview（Diff 预览）
 ### 面板管理系统
 
 基于 react-dnd 的灵活布局系统：
+
 - 18+ 功能面板
 - 拖拽合并/拆分
 - 面板固定/锁定
@@ -473,6 +483,7 @@ DiffPreview（Diff 预览）
 - 布局持久化
 
 **面板类型：**
+
 - AI 对话面板
 - 文件管理面板
 - 代码编辑面板
@@ -484,6 +495,7 @@ DiffPreview（Diff 预览）
 ### 任务看板
 
 AI 驱动的任务管理系统：
+
 - 自动任务提取
 - 任务状态流转
 - 优先级管理
@@ -491,6 +503,7 @@ AI 驱动的任务管理系统：
 - 提醒系统
 
 **看板列：**
+
 - 待处理
 - 进行中
 - 已完成
@@ -499,6 +512,7 @@ AI 驱动的任务管理系统：
 ### 设置系统
 
 完整的设置页面，包括：
+
 - **通用设置**: 主题、语言、编辑器、快捷键
 - **账号信息**: 个人资料、头像、偏好
 - **智能体配置**: AI 智能体管理
@@ -655,7 +669,7 @@ pnpm test:e2e        # E2E 测试
 
 ### 自动部署流程
 
-项目已配置 GitHub Actions 自动部署到 GitHub Pages，访问地址：**[https://family-ai.yyccube.com](https://family-ai.yyccube.com)**
+项目已配置 GitHub Actions 自动部署到 GitHub Pages，访问地址：**[https://family-ai.yyc3.vip](https://family-ai.yyc3.vip)**
 
 ### 部署触发条件
 
@@ -692,8 +706,8 @@ pnpm test:e2e        # E2E 测试
 
 #### 4. 多环境支持 ✅
 
-- **Production**: `main` 分支 → https://family-ai.yyccube.com
-- **Staging**: `staging` 分支 → https://staging.family-ai.yyccube.com
+- **Production**: `main` 分支 → <https://family-ai.yyc3.vip>
+- **Staging**: `staging` 分支 → <https://staging.family-ai.yyc3.vip>
 - **Development**: `develop` 分支 → 本地开发
 - 支持手动触发并选择目标环境
 - 独立的并发控制，避免环境冲突
@@ -732,12 +746,12 @@ pnpm test:e2e        # E2E 测试
 
 ### Workflow 文件
 
-| Workflow | 用途 | 文件 |
-|----------|------|------|
-| **Enhanced CI/CD** | 主要部署流程（带报告） | `.github/workflows/ci-cd-enhanced.yml` |
+| Workflow              | 用途　　　　　　　　　　 | 文件　　　　　　　　　　　　　　　　　　　|
+| -----------------------| --------------------------| -------------------------------------------|
+| **Enhanced CI/CD**    | 主要部署流程（带报告）　 | `.github/workflows/ci-cd-enhanced.yml`　　|
 | **Intelligent CI/CD** | 智能质量分析（带趋势图） | `.github/workflows/ci-cd-intelligent.yml` |
-| **Advanced CI/CD** | 高级功能（多环境支持） | `.github/workflows/ci-cd-advanced.yml` |
-| **Basic CI/CD** | 基础流程（快速部署） | `.github/workflows/ci-cd-basic.yml` |
+| **Advanced CI/CD**    | 高级功能（多环境支持）　 | `.github/workflows/ci-cd-advanced.yml`　　|
+| **Basic CI/CD**       | 基础流程（快速部署）　　 | `.github/workflows/ci-cd-basic.yml`　　　 |
 
 ### 质量门禁
 
@@ -751,13 +765,13 @@ pnpm test:e2e        # E2E 测试
 ### 部署环境
 
 - **环境名称**: `github-pages`
-- **部署 URL**: https://family-ai.yyccube.com
+- **部署 URL**: <https://family-ai.yyc3.vip>
 - **静态站点**: GitHub Pages
 - **构建输出**: `dist/` 目录
 
 ### 查看部署状态
 
-1. 访问 GitHub Actions 页面：https://github.com/YanYuCloudCube/YYC3-Family-AI/actions
+1. 访问 GitHub Actions 页面：<https://github.com/YanYuCloudCube/YYC3-Family-AI/actions>
 2. 查看最新的 workflow 运行记录
 3. 点击具体 workflow 查看详细日志和部署状态
 
@@ -795,17 +809,17 @@ pnpm preview
 ## 联系方式
 
 - **团队**: YanYuCloudCube Team
-- **邮箱**: admin@0379.email
+- **邮箱**: <admin@0379.email>
 - **GitHub**: [YanYuCloudCube](https://github.com/YanYuCloudCube)
-- **在线体验**: [https://family-ai.yyccube.com](https://family-ai.yyccube.com)
+- **在线体验**: [https://family-ai.yyc3.vip](https://family-ai.yyc3.vip)
 
 ---
 
 **项目版本**: v1.0.1
 **最后更新**: 2026-04-15
-**维护团队**: YanYuCloudCube Team  
-**文档状态**: ✅ 已完善  
-**在线地址**: [https://family-ai.yyccube.com](https://family-ai.yyccube.com)
+**维护团队**: YanYuCloudCube Team
+**文档状态**: ✅ 已完善
+**在线地址**: [https://family-ai.yyc3.vip](https://family-ai.yyc3.vip)
 
 ---
 

@@ -1270,7 +1270,6 @@ function ProxyConfigPanel() {
 
 部署选项:
   A. Cloudflare Workers — 零延迟边缘代理
-  B. Vercel Edge Functions — 同域部署
   C. Supabase Edge Functions — 集成生态
   D. 自建 Node.js — 完全控制`}</pre>
         </div>

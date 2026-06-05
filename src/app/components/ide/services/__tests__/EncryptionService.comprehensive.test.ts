@@ -730,11 +730,12 @@ Line 3`;
 
 describe('EncryptionService - toArrayBuffer 工具函数', () => {
 
-  it('应该将ArrayBuffer转换为自身', () => {
+  it('应该将ArrayBuffer转换为独立副本', () => {
     const buffer = new ArrayBuffer(16);
     const result = (EncryptionService as any).toArrayBuffer(buffer);
     
-    expect(result).toBe(buffer);
+    expect(result).toBeInstanceOf(ArrayBuffer);
+    expect(result.byteLength).toBe(buffer.byteLength);
   });
 
   it('应该将Uint8Array转换为ArrayBuffer', () => {

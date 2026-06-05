@@ -1,290 +1,27 @@
 /**
  * @file: types/index.ts
- * @description: 核心类型定义 — 对齐 P0-架构-类型定义.md，集中管理 Design JSON、面板、组件等接口
+ * @description: 统一类型 barrel — 单一导入源
+ *              v2.0: 新增预览类型标准化 re-export，解决 p0-core vs previewTypes 重复问题
  * @author: YanYuCloudCube Team <admin@0379.email>
- * @version: v1.0.0
- * @created: 2026-03-15
- * @updated: 2026-03-31
+ * @version: v2.0.0
+ * @created: 2026-03-21
+ * @updated: 2026-06-04
  * @status: stable
  * @license: MIT
  * @copyright: Copyright (c) 2026 YanYuCloudCube Team
- * @tags: types,interfaces,design-json,panel,component
+ * @tags: types,barrel,normalization,unified
  */
 
 // ================================================================
-// P0 核心功能类型定义（新增）
+// 统一类型 barrel — 消除类型重复定义
+// ================================================================
+// 规范：
+//   1. 每种类型只有一个数据源文件（source of truth）
+//   2. 统一从此 barrel 导入，不再从子文件直接 import
+//   3. PreviewMode 以 previewTypes.ts 为准（含 "smart" 模式）
 // ================================================================
 
-export type {
-  // PreviewModeController
-  PreviewMode,
-  PreviewModeConfig,
-  PreviewModeControllerConfig,
-
-  // SnapshotManager
-  SnapshotFile,
-  SnapshotMetadata,
-  Snapshot,
-  SnapshotDiff,
-  SnapshotManagerConfig,
-
-  // CodeValidator
-  ValidationResult,
-  ParsedCodeBlock,
-  CodeValidatorConfig,
-
-  // SystemPromptBuilder
-  UserIntent,
-  SystemPromptConfig,
-  LLMMessage,
-  ConversationMessage,
-  BuildMessagesConfig,
-
-  // ProjectContext
-  ProjectContext,
-} from './p0-core';
-
-// ================================================================
-// Core Type Definitions (对齐 YYC3-Design-Prompt/P0-核心架构/YYC3-P0-架构-类型定义.md)
-// ================================================================
-
-// ── Design JSON 根节点 ──
-
-export interface DesignRoot {
-  version: string;
-  theme: "light" | "dark";
-  tokens: string;
-  panels: PanelSpec[];
-  components: ComponentSpec[];
-  styles: StyleSpec;
-  metadata?: ProjectMetadata;
-}
-
-export interface ProjectMetadata {
-  id: string;
-  name: string;
-  description?: string;
-  author?: string;
-  createdAt: string;
-  updatedAt: string;
-  techStack?: string[];
-  tags?: string[];
-}
-
-// ── 面板规范 ──
-
-export interface PanelSpec {
-  id: string;
-  type: PanelType;
-  layout: PanelLayout;
-  style?: PanelStyle;
-  children?: PanelSpec[];
-  components?: ComponentSpec[];
-  locked?: boolean;
-  pinned?: boolean;
-}
-
-export type PanelType =
-  | "container"
-  | "content"
-  | "preview"
-  | "terminal"
-  | "editor";
-
-export interface PanelLayout {
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-  minW?: number;
-  minH?: number;
-  maxW?: number;
-  maxH?: number;
-}
-
-export interface PanelStyle {
-  background?: string;
-  border?: string;
-  borderRadius?: number;
-  padding?: number;
-  margin?: number;
-  shadow?: string;
-  opacity?: number;
-}
-
-// ── 面板 ID 注册表 ──
-// NOTE: 权威定义在此文件，PanelManager.tsx 从此处导入并重新导出
-export type PanelId =
-  | "ai"
-  | "files"
-  | "code"
-  | "preview"
-  | "terminal"
-  | "git"
-  | "agents"
-  | "market"
-  | "knowledge"
-  | "rag"
-  | "collab"
-  | "ops"
-  | "workflow"
-  | "diagnostics"
-  | "performance"
-  | "security"
-  | "test-gen"
-  | "quality"
-  | "document-editor"
-  | "taskboard"
-  | "multi-instance"
-  | "multi-agent"
-  | "web-search"
-  | "chart";
-
-// ── 组件规范 ──
-
-export interface ComponentSpec {
-  id: string;
-  type: ComponentType;
-  props: Record<string, unknown>;
-  style?: ComponentStyle;
-  children?: ComponentSpec[];
-  events?: Record<string, string>;
-}
-
-export type ComponentType =
-  | "Button"
-  | "Input"
-  | "Text"
-  | "Image"
-  | "Container"
-  | "List"
-  | "Card"
-  | "Modal"
-  | "Dropdown"
-  | "Checkbox"
-  | "Radio"
-  | "Switch"
-  | "Slider"
-  | "DatePicker"
-  | "TimePicker"
-  | "Upload"
-  | "Progress"
-  | "Spinner"
-  | "Badge"
-  | "Avatar"
-  | "Divider"
-  | "Tooltip"
-  | "Popover"
-  | "Tabs"
-  | "Accordion"
-  | "Breadcrumb"
-  | "Pagination"
-  | "Table"
-  | "Form"
-  | "Alert"
-  | "Message"
-  | "Notification"
-  | "Drawer"
-  | "Skeleton"
-  | "Empty"
-  | "Result"
-  | "Statistic"
-  | "Timeline"
-  | "Tree"
-  | "Transfer"
-  | "Calendar"
-  | "Carousel"
-  | "Collapse"
-  | "Tag"
-  | "Rate"
-  | "Space"
-  | "Layout"
-  | "Menu"
-  | "Steps";
-
-export interface ComponentStyle {
-  width?: string | number;
-  height?: string | number;
-  padding?: string | number;
-  margin?: string | number;
-  background?: string;
-  border?: string;
-  borderRadius?: string | number;
-  boxShadow?: string;
-  opacity?: number;
-  display?: string;
-  flexDirection?: string;
-  justifyContent?: string;
-  alignItems?: string;
-  gap?: string | number;
-  position?: string;
-  zIndex?: number;
-  overflow?: string;
-  fontSize?: string | number;
-  fontWeight?: string | number;
-  lineHeight?: string | number;
-  color?: string;
-  textAlign?: string;
-  cursor?: string;
-  transition?: string;
-  transform?: string;
-  animation?: string;
-}
-
-// ── 样式规范 ──
-
-export interface StyleSpec {
-  tokens: DesignTokens;
-  theme: ThemeSpec;
-  components: Record<string, ComponentStyle>;
-}
-
-export interface DesignTokens {
-  colors: ColorTokenMap;
-  spacing: Record<string, string>;
-  typography: TypographyTokens;
-  borderRadius: Record<string, string>;
-  shadows: Record<string, string>;
-  transitions: Record<string, string>;
-}
-
-export interface ColorTokenMap {
-  primary: ColorScale;
-  secondary: ColorScale;
-  success: ColorScale;
-  warning: ColorScale;
-  error: ColorScale;
-  neutral: ColorScale;
-}
-
-export interface ColorScale {
-  50: string;
-  100: string;
-  200: string;
-  300: string;
-  400: string;
-  500: string;
-  600: string;
-  700: string;
-  800: string;
-  900: string;
-}
-
-export interface TypographyTokens {
-  fontFamily: {
-    sans: string[];
-    mono: string[];
-  };
-  fontSize: Record<string, string>;
-  fontWeight: Record<string, number>;
-  lineHeight: Record<string, number>;
-}
-
-export interface ThemeSpec {
-  name: string;
-  mode: "light" | "dark";
-  colors: ThemeColors;
-}
+// ── 主题系统 ──
 
 export interface ThemeColors {
   background: string;
@@ -296,6 +33,19 @@ export interface ThemeColors {
   border: string;
   input: string;
   ring: string;
+}
+
+export interface ThemeTokens {
+  cssVars: Record<string, string>;
+  shadcnThemes: Record<string, Record<string, string>>;
+  xtermThemes: Record<string, Record<string, string>>;
+  lineHeight: Record<string, number>;
+}
+
+export interface ThemeSpec {
+  name: string;
+  mode: "light" | "dark";
+  colors: ThemeColors;
 }
 
 // ── AI 相关类型 ──
@@ -492,3 +242,134 @@ export type SupportedLocale = "zh-CN" | "en-US" | "ja-JP";
 export interface I18nTranslation {
   [key: string]: string | I18nTranslation;
 }
+
+// ================================================================
+// v2.0: 标准化的子模块类型 re-export（单一数据源）
+// ================================================================
+
+// ── 预览系统 (source of truth: previewTypes.ts) ──
+// 注意：PreviewMode 以 previewTypes.ts 为准（含 "smart" 模式）
+// p0-core.ts 中的 PreviewMode 定义不含 "smart"，请使用 previewTypes 版本
+export type {
+  ConsoleLog, DevicePreset, DeviceType,
+  PreviewEngineType, PreviewMode, PreviewSnapshot
+} from "./previewTypes";
+
+// ── 设计系统类型 (IDE 面板设计规范) ──
+export interface DesignRoot {
+  version: string;
+  theme: "light" | "dark";
+  tokens: string;
+  panels: PanelSpec[];
+  components: ComponentSpec[];
+  styles: StyleSpec;
+  metadata?: ProjectMetadata;
+}
+
+export interface ProjectMetadata {
+  id: string;
+  name: string;
+  description?: string;
+  author?: string;
+  createdAt: string;
+  updatedAt: string;
+  techStack?: string[];
+  tags?: string[];
+}
+
+export interface PanelSpec {
+  id: string;
+  type: PanelType;
+  layout: PanelLayout;
+  style?: PanelStyle;
+  children?: PanelSpec[];
+  components?: ComponentSpec[];
+  locked?: boolean;
+  pinned?: boolean;
+}
+
+export type PanelType =
+  | "container"
+  | "content"
+  | "preview"
+  | "terminal"
+  | "editor";
+
+export interface PanelLayout {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  minW?: number;
+  minH?: number;
+  maxW?: number;
+  maxH?: number;
+}
+
+export interface PanelStyle {
+  background?: string;
+  border?: string;
+  borderRadius?: number;
+  elevation?: number;
+}
+
+export type PanelId = string;
+
+export interface ComponentSpec {
+  id: string;
+  type: ComponentType;
+  style?: ComponentStyle;
+  props?: Record<string, unknown>;
+}
+
+export type ComponentType =
+  | "button"
+  | "input"
+  | "textarea"
+  | "select"
+  | "checkbox"
+  | "radio"
+  | "switch"
+  | "slider"
+  | "table"
+  | "chart"
+  | "tree"
+  | "tabs"
+  | "tooltip"
+  | "modal"
+  | "drawer"
+  | "custom";
+
+export interface ComponentStyle {
+  width?: string | number;
+  height?: string | number;
+  margin?: string | number;
+  padding?: string | number;
+  color?: string;
+  background?: string;
+  border?: string;
+  borderRadius?: number;
+  fontSize?: string | number;
+  fontWeight?: string | number;
+}
+
+export interface StyleSpec {
+  colors: Record<string, string>;
+  typography: Record<string, { fontFamily: string; fontSize: string; fontWeight: number; lineHeight: number }>;
+  spacing: Record<string, string>;
+  shadows: Record<string, string>;
+  radii: Record<string, string>;
+}
+
+// ── P0 核心 (快照、验证、提示词) ──
+export type {
+  BuildMessagesConfig, CodeValidatorConfig, ConversationMessage, LLMMessage, ParsedCodeBlock, PreviewModeConfig,
+  PreviewModeControllerConfig, ProjectContext, Snapshot,
+  SnapshotDiff, SnapshotFile, SnapshotManagerConfig, SnapshotMetadata, SystemPromptConfig, UserIntent, ValidationResult
+} from "./p0-core";
+
+// ── 多实例 ──
+export type {
+  AIConfig, AppInstance, EditorConfig, InstanceType, SessionStatus, SessionType, WindowConfig, WindowType,
+  WorkspaceType
+} from "./multi-instance";

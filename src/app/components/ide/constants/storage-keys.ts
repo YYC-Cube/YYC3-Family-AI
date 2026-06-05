@@ -46,6 +46,7 @@ export const SK_MODEL_USAGE_DATA = "yyc3_model_usage_data";
 export const SK_ACTIVE_MODEL = "yyc3_active_model";
 export const SK_LLM_KEY_PREFIX = "yyc3_llm_key_";
 export const SK_OLLAMA_CACHE_PREFIX = "yyc3_ollama_cache_";
+export const SK_MODEL_STORAGE_PATH = "yyc3_model_storage_path";
 
 // ── 心跳 ──
 export const SK_HEARTBEAT_ENABLED = "yyc3_heartbeat_enabled";

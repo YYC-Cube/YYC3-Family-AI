@@ -78,7 +78,7 @@ export async function openFileDialog(options?: {
       }
       return results;
     } catch (e) {
-      console.warn(
+      logger.warn(
         "[TauriBridge] Native file dialog failed, falling back to web:",
         e,
       );

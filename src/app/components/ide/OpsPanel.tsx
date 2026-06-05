@@ -1377,12 +1377,6 @@ function ProxyTab() {
               tagColor: "text-emerald-400 bg-emerald-900/30",
             },
             {
-              name: "Vercel Edge Functions",
-              desc: "与前端同域部署",
-              tag: "简单",
-              tagColor: "text-sky-400 bg-sky-900/30",
-            },
-            {
               name: "Supabase Edge Functions",
               desc: "集成 Supabase 生态",
               tag: "集成",

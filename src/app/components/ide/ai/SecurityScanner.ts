@@ -1,3 +1,4 @@
+import { logger } from "../services/Logger";
 /**
  * @file: ai/SecurityScanner.ts
  * @description: F2.4 智能安全扫描模块，对项目文件执行安全漏洞检测，

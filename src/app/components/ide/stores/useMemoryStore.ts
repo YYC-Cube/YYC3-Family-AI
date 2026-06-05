@@ -205,7 +205,7 @@ export const useMemoryStore = create<MemoryState & MemoryActions>((set, get) => 
     set({ loading: true })
     try {
       const db = await getDB()
-      let items = await db.getAll(STORE_NAME)
+      let items = await db.getAll(STORE_NAME) as MemoryItem[]
 
       // Seed on first run
       if (items.length === 0) {

@@ -524,7 +524,7 @@ export class PluginLoader {
         warnings,
       };
     } catch (error) {
-      console.error(
+      logger.error(
         `[PluginLoader] Failed to load plugin "${manifest.id}":`,
         error,
       );
@@ -596,7 +596,7 @@ export class PluginLoader {
       instance.state = state;
       instance.context = context;
 
-      console.warn(
+      logger.warn(
         `[PluginLoader] Plugin "${instance.manifest.id}" activated successfully`,
       );
 
@@ -605,7 +605,7 @@ export class PluginLoader {
         plugin: instance,
       };
     } catch (error) {
-      console.error(
+      logger.error(
         `[PluginLoader] Failed to activate plugin "${instance.manifest.id}":`,
         error,
       );
@@ -668,7 +668,7 @@ export class PluginLoader {
       instance.exports = undefined;
       instance.context = undefined;
 
-      console.warn(
+      logger.warn(
         `[PluginLoader] Plugin "${instance.manifest.id}" deactivated successfully`,
       );
 
@@ -677,7 +677,7 @@ export class PluginLoader {
         plugin: instance,
       };
     } catch (error) {
-      console.error(
+      logger.error(
         `[PluginLoader] Failed to deactivate plugin "${instance.manifest.id}":`,
         error,
       );
@@ -731,7 +731,7 @@ export class PluginLoader {
 
       instance.state = state;
 
-      console.warn(
+      logger.warn(
         `[PluginLoader] Plugin "${instance.manifest.id}" unloaded successfully`,
       );
 
@@ -740,7 +740,7 @@ export class PluginLoader {
         plugin: instance,
       };
     } catch (error) {
-      console.error(
+      logger.error(
         `[PluginLoader] Failed to unload plugin "${instance.manifest.id}":`,
         error,
       );
@@ -871,7 +871,7 @@ export class PluginLoader {
       }
     }
 
-    console.warn(
+    logger.warn(
       `[PluginLoader] Registered contributions for "${manifest.id}"`,
     );
   }
@@ -925,7 +925,7 @@ export class PluginLoader {
       }
     }
 
-    console.warn(
+    logger.warn(
       `[PluginLoader] Unregistered contributions for "${manifest.id}"`,
     );
   }

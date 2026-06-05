@@ -171,7 +171,7 @@ export class CompatibilityTestSuite {
       const compatibilityScore = this.calculateCompatibilityScore(features);
       const passed = features.every((f) => f.supported && f.working);
 
-      console.warn(
+      logger.warn(
         `  [BrowserTest] ${browser.name}: Performance=${performanceScore}, Compatibility=${compatibilityScore}`,
       );
 
@@ -233,7 +233,7 @@ export class CompatibilityTestSuite {
       const compatibilityScore = this.calculateCompatibilityScore(features);
       const passed = features.every((f) => f.supported && f.working);
 
-      console.warn(
+      logger.warn(
         `  [OSTest] ${os.name}: Performance=${performanceScore}, Compatibility=${compatibilityScore}`,
       );
 
@@ -268,7 +268,7 @@ export class CompatibilityTestSuite {
     const results: ResolutionTestResult[] = [];
 
     for (const resolution of this.config.resolutions) {
-      console.warn(
+      logger.warn(
         `  [ResolutionTest] Testing ${resolution.name} (${resolution.width}x${resolution.height})...`,
       );
       const result = await this.testResolution(resolution);
@@ -293,7 +293,7 @@ export class CompatibilityTestSuite {
       const performanceScore = this.testResolutionPerformance(resolution);
       const passed = layoutTestPassed && responsiveTestPassed;
 
-      console.warn(
+      logger.warn(
         `  [ResolutionTest] ${resolution.name}: Layout=${layoutTestPassed}, Responsive=${responsiveTestPassed}`,
       );
 
@@ -349,7 +349,7 @@ export class CompatibilityTestSuite {
       const iconClarityTestPassed = this.testIconClarity(dpi);
       const passed = scalingTestPassed && fontRenderingTestPassed && iconClarityTestPassed;
 
-      console.warn(
+      logger.warn(
         `  [DPITest] ${dpi.name}: Scaling=${scalingTestPassed}, Font=${fontRenderingTestPassed}, Icon=${iconClarityTestPassed}`,
       );
 

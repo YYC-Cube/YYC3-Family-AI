@@ -127,7 +127,7 @@ export class PerformanceTestSuite {
     }> = [];
 
     // 创建快照
-    console.warn(
+    logger.warn(
       `  [SnapshotTest] Creating ${this.config.snapshotCount} snapshots...`,
     );
     const creationStart = Date.now();
@@ -199,7 +199,7 @@ export class PerformanceTestSuite {
     }> = [];
 
     // 写入日志
-    console.warn(
+    logger.warn(
       `  [ConsoleTest] Writing ${this.config.consoleLogCount} logs...`,
     );
     const writeStart = Date.now();
@@ -264,7 +264,7 @@ export class PerformanceTestSuite {
    * 测试并发操作
    */
   async testConcurrentOperations(): Promise<ConcurrencyPerformanceResult> {
-    console.warn(
+    logger.warn(
       `  [ConcurrencyTest] Running ${this.config.concurrentOperations} concurrent operations...`,
     );
 
@@ -312,11 +312,11 @@ export class PerformanceTestSuite {
       successRate,
     };
 
-    console.warn(
+    logger.warn(
       `  [ConcurrencyTest] Average response time: ${averageResponseTime.toFixed(2)}ms`,
     );
     logger.warn('[ConcurrencyTest] Max response time: ${maxResponseTime}ms');
-    console.warn(
+    logger.warn(
       `  [ConcurrencyTest] Throughput: ${throughput.toFixed(2)} ops/sec`,
     );
     logger.warn('[ConcurrencyTest] Success rate: ${successRate.toFixed(2)}%');
@@ -383,7 +383,7 @@ export class PerformanceTestSuite {
 
     logger.warn('[LongRunningTest] Duration: ${duration}ms');
     logger.warn('[LongRunningTest] Memory leaks: ${memoryLeaks}');
-    console.warn(
+    logger.warn(
       `  [LongRunningTest] Performance degradation: ${performanceDegradation}`,
     );
     logger.warn('[LongRunningTest] Errors: ${errorCount}');

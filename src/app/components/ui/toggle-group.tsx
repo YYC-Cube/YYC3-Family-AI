@@ -8,7 +8,7 @@
  * @status: stable
  * @license: MIT
  * @copyright: Copyright (c) 2026 YanYuCloudCube Team
- * @tags: component,react,ui,ui
+ * @tags: ui,toggle-group,radix-ui
  */
 
 "use client";

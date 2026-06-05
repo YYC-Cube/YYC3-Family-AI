@@ -8,21 +8,9 @@
  * @status: stable
  * @license: MIT
  * @copyright: Copyright (c) 2026 YanYuCloudCube Team
- * @tags: component,react,ui,ui
+ * @tags: ui,scroll-area,radix-ui
  */
 
-/**
- * file: ui/scroll-area.tsx
- * description: 滚动区域组件 - 基于 Radix UI Scroll Area，支持自定义滚动条、视口、角落
- * author: YanYuCloudCube Team <admin@0379.email>
- * version: v1.0.0
- * created: 2026-03-19
- * updated: 2026-03-19
- * status: stable
- * license: MIT
- * copyright: Copyright (c) 2026 YanYuCloudCube Team
- * tags: ui,scroll-area,radix-ui,scrollbar
- */
 
 "use client";
 

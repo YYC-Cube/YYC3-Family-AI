@@ -8,21 +8,9 @@
  * @status: stable
  * @license: MIT
  * @copyright: Copyright (c) 2026 YanYuCloudCube Team
- * @tags: component,react,ui,ui
+ * @tags: ui,tooltip,radix-ui
  */
 
-/**
- * file: ui/tooltip.tsx
- * description: 工具提示组件 - 基于 Radix UI Tooltip，支持延迟、定位、触发器
- * author: YanYuCloudCube Team <admin@0379.email>
- * version: v1.0.0
- * created: 2026-03-19
- * updated: 2026-03-19
- * status: stable
- * license: MIT
- * copyright: Copyright (c) 2026 YanYuCloudCube Team
- * tags: ui,tooltip,radix-ui,hover
- */
 
 "use client";
 

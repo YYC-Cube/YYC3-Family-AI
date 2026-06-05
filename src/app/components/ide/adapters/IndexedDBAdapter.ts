@@ -1,3 +1,4 @@
+import { logger } from "../services/Logger";
 /**
  * @file: adapters/IndexedDBAdapter.ts
  * @description: IndexedDB 文件系统持久化层，使用 idb 封装提供 offline-first 文件存储

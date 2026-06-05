@@ -206,7 +206,7 @@ export class BoundaryHandler {
       truncated = true;
       newContent = lines.slice(0, this.fileLimits.maxLineCount).join("\n");
       newSize = newContent.length;
-      console.warn(
+      logger.warn(
         `[BoundaryHandler] 截断文件 ${filename}: ${lines.length} -> ${this.fileLimits.maxLineCount} 行`
       );
     }
@@ -216,7 +216,7 @@ export class BoundaryHandler {
       truncated = true;
       newContent = newContent.slice(0, this.fileLimits.maxCharacterCount);
       newSize = newContent.length;
-      console.warn(
+      logger.warn(
         `[BoundaryHandler] 截断文件 ${filename}: ${originalSize} -> ${newSize} 字符`
       );
     }
@@ -244,7 +244,7 @@ export class BoundaryHandler {
 
     // 如果达到并发限制，加入队列
     if (this.activeOpCount >= this.concurrencyConfig.maxConcurrentOps) {
-      console.warn(
+      logger.warn(
         `[BoundaryHandler] 达到并发限制 ${this.concurrencyConfig.maxConcurrentOps}，操作入队: ${operationId}`
       );
       return this.queueOperation(operation);
@@ -336,7 +336,7 @@ export class BoundaryHandler {
         return await operation();
       } catch (error) {
         lastError = error instanceof Error ? error : new Error(String(error));
-        console.warn(
+        logger.warn(
           `[BoundaryHandler] ${operationName} 重试 ${attempt}/${maxRetries}:`,
           lastError.message
         );

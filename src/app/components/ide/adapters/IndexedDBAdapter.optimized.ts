@@ -1,3 +1,4 @@
+import { logger } from "../services/Logger";
 /**
  * @file: adapters/IndexedDBAdapter.optimized.ts
  * @description: IndexedDB 性能优化版本 - 添加缓存层、批量优化、性能监控
@@ -283,7 +284,7 @@ export async function saveFile(
     const duration = performance.now() - startTime;
     performanceMonitor.recordQuery(duration, false);
   } catch (error) {
-    console.error("Failed to save file:", error);
+    logger.error("Failed to save file:", error);
     throw error;
   }
 }
@@ -331,7 +332,7 @@ export async function saveFiles(
     const duration = performance.now() - startTime;
     performanceMonitor.recordQuery(duration, false);
   } catch (error) {
-    console.error("Failed to save files:", error);
+    logger.error("Failed to save files:", error);
     throw error;
   }
 }
@@ -372,7 +373,7 @@ export async function loadFile(
 
     return null;
   } catch (error) {
-    console.error("Failed to load file:", error);
+    logger.error("Failed to load file:", error);
     throw error;
   }
 }
@@ -433,7 +434,7 @@ export async function loadFiles(
 
     return result;
   } catch (error) {
-    console.error("Failed to load files:", error);
+    logger.error("Failed to load files:", error);
     throw error;
   }
 }
@@ -458,13 +459,13 @@ export async function loadAllFiles(
 
     // 2. 从 IndexedDB 加载
     const db = await getDB();
-    const files = await db.getAllFromIndex(STORE_FILES, "projectId", projectId);
+    const files = await (db as any).getAllFromIndex(STORE_FILES, "projectId", projectId);
 
     // 3. 构建结果对象
     const result: Record<string, string> = {};
     const prefix = `${projectId}/`;
 
-    for (const file of files) {
+    for (const file of files as any[]) {
       const relativePath = file.path.startsWith(prefix)
         ? file.path.slice(prefix.length)
         : file.path;
@@ -482,7 +483,7 @@ export async function loadAllFiles(
 
     return result;
   } catch (error) {
-    console.error("Failed to load all files:", error);
+    logger.error("Failed to load all files:", error);
     throw error;
   }
 }
@@ -511,7 +512,7 @@ export async function deleteFile(
     const duration = performance.now() - startTime;
     performanceMonitor.recordQuery(duration, false);
   } catch (error) {
-    console.error("Failed to delete file:", error);
+    logger.error("Failed to delete file:", error);
     throw error;
   }
 }
@@ -524,7 +525,7 @@ export async function deleteAllFiles(projectId: string): Promise<void> {
 
   try {
     const db = await getDB();
-    const files = await db.getAllKeysFromIndex(
+    const files = await (db as any).getAllKeysFromIndex(
       STORE_FILES,
       "projectId",
       projectId,
@@ -544,7 +545,7 @@ export async function deleteAllFiles(projectId: string): Promise<void> {
     const duration = performance.now() - startTime;
     performanceMonitor.recordQuery(duration, false);
   } catch (error) {
-    console.error("Failed to delete all files:", error);
+    logger.error("Failed to delete all files:", error);
     throw error;
   }
 }
@@ -566,7 +567,7 @@ export async function loadProject(id: string): Promise<StoredProject | null> {
   }
 
   const db = await getDB();
-  const project = await db.get(STORE_PROJECTS, id);
+  const project = await (db as any).get(STORE_PROJECTS, id) as StoredProject | undefined;
 
   if (project) {
     queryCache.set(`project:${id}`, project);
@@ -584,8 +585,8 @@ export async function listProjects(): Promise<StoredProject[]> {
   }
 
   const db = await getDB();
-  const projects = await db.getAll(STORE_PROJECTS);
-  const sorted = projects.sort((a, b) => b.updatedAt - a.updatedAt);
+  const projects = await (db as any).getAll(STORE_PROJECTS) as StoredProject[];
+  const sorted = projects.sort((a: StoredProject, b: StoredProject) => b.updatedAt - a.updatedAt);
 
   queryCache.set(cacheKey, sorted);
   return sorted;
@@ -650,12 +651,12 @@ export async function listSnapshots(
   }
 
   const db = await getDB();
-  const snapshots = await db.getAllFromIndex(
+  const snapshots = await (db as any).getAllFromIndex(
     STORE_SNAPSHOTS,
     "projectId",
     projectId,
-  );
-  const sorted = snapshots.sort((a, b) => b.createdAt - a.createdAt);
+  ) as StoredSnapshot[];
+  const sorted = snapshots.sort((a: StoredSnapshot, b: StoredSnapshot) => b.createdAt - a.createdAt);
 
   queryCache.set(cacheKey, sorted);
   return sorted;
@@ -776,7 +777,7 @@ export async function listFiles(
   }
 
   const db = await getDB();
-  const files = await db.getAllFromIndex(STORE_FILES, "projectId", projectId);
+  const files = await (db as any).getAllFromIndex(STORE_FILES, "projectId", projectId) as StoredFile[];
 
   queryCache.set(cacheKey, files);
   return files;
@@ -803,9 +804,9 @@ export async function clearAllData(): Promise<void> {
     // 清空缓存
     queryCache.clear();
 
-    console.warn("All IndexedDB data cleared successfully");
+    logger.warn("All IndexedDB data cleared successfully");
   } catch (error) {
-    console.error("Failed to clear all data:", error);
+    logger.error("Failed to clear all data:", error);
     throw error;
   }
 }

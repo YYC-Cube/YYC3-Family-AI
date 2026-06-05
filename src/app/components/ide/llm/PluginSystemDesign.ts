@@ -125,14 +125,14 @@ export class ExtensionPointManager {
         const result = point.handler(extension, pluginId);
         if (result instanceof Promise) {
           result.catch((error) => {
-            console.error(
+            logger.error(
               `[ExtensionPoints] Handler error for "${pointId}":`,
               error,
             );
           });
         }
       } catch (error) {
-        console.error(
+        logger.error(
           `[ExtensionPoints] Handler error for "${pointId}":`,
           error,
         );
@@ -146,7 +146,7 @@ export class ExtensionPointManager {
         try {
           handler(extension, pluginId);
         } catch (error) {
-          console.error(
+          logger.error(
             `[ExtensionPoints] Handler error for "${pointId}":`,
             error,
           );
@@ -154,7 +154,7 @@ export class ExtensionPointManager {
       });
     }
 
-    console.warn(
+    logger.warn(
       `[ExtensionPoints] Extension "${extensionId}" registered to "${pointId}"`,
     );
   }
@@ -169,7 +169,7 @@ export class ExtensionPointManager {
     }
 
     point.extensions.delete(extensionId);
-    console.warn(
+    logger.warn(
       `[ExtensionPoints] Extension "${extensionId}" unregistered from "${pointId}"`,
     );
   }

@@ -51,17 +51,16 @@ export class EncryptionService {
    */
   private static toArrayBuffer(data: Uint8Array | ArrayBuffer | Buffer): ArrayBuffer {
     if (data instanceof ArrayBuffer) {
-      return data
+      const copy = new ArrayBuffer(data.byteLength)
+      new Uint8Array(copy).set(new Uint8Array(data))
+      return copy
     }
-    if (ArrayBuffer.isView(data)) {
-      const buffer = new ArrayBuffer(data.byteLength)
-      new Uint8Array(buffer).set(new Uint8Array(data.buffer, data.byteOffset, data.byteLength))
-      return buffer
-    }
-    const uint8Data = data as Uint8Array
-    const buffer = new ArrayBuffer(uint8Data.byteLength)
-    new Uint8Array(buffer).set(uint8Data)
-    return buffer
+    const src = ArrayBuffer.isView(data)
+      ? new Uint8Array((data as Uint8Array).buffer, (data as Uint8Array).byteOffset, (data as Uint8Array).byteLength)
+      : new Uint8Array(data as Uint8Array)
+    const copy = new ArrayBuffer(src.byteLength)
+    new Uint8Array(copy).set(src)
+    return copy
   }
 
   static getInstance(): EncryptionService {

@@ -8,21 +8,9 @@
  * @status: stable
  * @license: MIT
  * @copyright: Copyright (c) 2026 YanYuCloudCube Team
- * @tags: component,react,ui,ui
+ * @tags: ui,slider,radix-ui,form
  */
 
-/**
- * file: ui/slider.tsx
- * description: 滑块组件 - 基于 Radix UI Slider，支持单值/双值、范围、步长
- * author: YanYuCloudCube Team <admin@0379.email>
- * version: v1.0.0
- * created: 2026-03-19
- * updated: 2026-03-19
- * status: stable
- * license: MIT
- * copyright: Copyright (c) 2026 YanYuCloudCube Team
- * tags: ui,slider,radix-ui,range
- */
 
 "use client";
 

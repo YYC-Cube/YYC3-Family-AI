@@ -1,30 +1,28 @@
-import { useState, useEffect, useCallback, useMemo, lazy, Suspense, useRef } from "react";
 import {
-  X,
-  Eye,
+  ArrowRight,
+  Check,
+  ChevronRight,
   Code2,
+  Copy,
   Cpu,
   Download,
-  Star,
-  Users,
+  Eye,
   Layers,
-  Zap,
-  Monitor,
-  Smartphone,
-  Tablet,
-  ExternalLink,
-  Copy,
-  Check,
   Loader2,
   Maximize2,
-  ArrowRight,
-  Sparkles,
-  ChevronRight,
+  Monitor,
   Package,
+  Smartphone,
+  Sparkles,
+  Star,
+  Tablet,
+  X,
+  Zap
 } from "lucide-react";
-import { motion, AnimatePresence } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useThemeTokens } from "./ide/hooks/useThemeTokens";
-import { buildPreviewHtml, detectLanguage } from "./ide/PreviewEngine";
+import { buildPreviewHtml } from "./ide/PreviewEngine";
 
 const SandpackPreviewPanel = lazy(() => import("./ide/SandpackPreview"));
 
@@ -161,6 +159,9 @@ export default function TemplatePreviewModal({
                 </div>
               </div>
               <button
+                type="button"
+                aria-label="关闭预览"
+                title="关闭预览"
                 onClick={onClose}
                 className={`p-2 rounded-lg transition-colors ${t.text.muted} hover:${t.text.primary}`}
               >
@@ -176,14 +177,14 @@ export default function TemplatePreviewModal({
                 const isDisabled = tab.key === "preview" && !hasLivePreview && !template.previewScreenshot;
                 return (
                   <button
+                    type="button"
                     key={tab.key}
                     disabled={isDisabled}
                     onClick={() => setActiveTab(tab.key)}
-                    className={`flex items-center gap-1.5 px-4 py-2 text-[0.78rem] border-b-2 transition-colors ${
-                      isActive
-                        ? `border-current ${t.text.accent} font-medium`
-                        : `border-transparent ${t.text.muted} hover:${t.text.secondary}`
-                    } ${isDisabled ? "opacity-40 cursor-not-allowed" : ""}`}
+                    className={`flex items-center gap-1.5 px-4 py-2 text-[0.78rem] border-b-2 transition-colors ${isActive
+                      ? `border-current ${t.text.accent} font-medium`
+                      : `border-transparent ${t.text.muted} hover:${t.text.secondary}`
+                      } ${isDisabled ? "opacity-40 cursor-not-allowed" : ""}`}
                   >
                     <Icon className="w-3.5 h-3.5" />
                     {tab.label}
@@ -194,21 +195,26 @@ export default function TemplatePreviewModal({
               {activeTab === "preview" && hasLivePreview && (
                 <div className="flex items-center gap-1 mr-2">
                   {([
-                    ["desktop", Monitor],
-                    ["tablet", Tablet],
-                    ["mobile", Smartphone],
-                  ] as const).map(([mode, Icon]) => (
+                    ["desktop", Monitor, "桌面视图"],
+                    ["tablet", Tablet, "平板视图"],
+                    ["mobile", Smartphone, "移动视图"],
+                  ] as const).map(([mode, Icon, label]) => (
                     <button
+                      type="button"
                       key={mode}
+                      aria-label={label}
+                      title={label}
                       onClick={() => setDeviceMode(mode)}
-                      className={`p-1.5 rounded-md transition-colors ${
-                        deviceMode === mode ? t.templates.viewBtnActive : t.templates.viewBtnInactive
-                      }`}
+                      className={`p-1.5 rounded-md transition-colors ${deviceMode === mode ? t.templates.viewBtnActive : t.templates.viewBtnInactive
+                        }`}
                     >
                       <Icon className="w-3.5 h-3.5" />
                     </button>
                   ))}
                   <button
+                    type="button"
+                    aria-label={isFullscreen ? "退出全屏" : "全屏预览"}
+                    title={isFullscreen ? "退出全屏" : "全屏预览"}
                     onClick={() => setIsFullscreen(!isFullscreen)}
                     className={`p-1.5 rounded-md transition-colors ${t.templates.viewBtnInactive}`}
                   >
@@ -240,8 +246,8 @@ export default function TemplatePreviewModal({
                       }
                     >
                       <div
-                        className="h-full rounded-xl overflow-hidden border border-[var(--border)]"
-                        style={deviceMode !== "desktop" ? { maxWidth: deviceWidth, margin: "0 auto" } : undefined}
+                        className={`h-full rounded-xl overflow-hidden border border-[var(--border)]${deviceMode !== "desktop" ? " mx-auto" : ""}`}
+                        {...(deviceMode !== "desktop" ? { style: { maxWidth: deviceWidth } } : {})}
                       >
                         <SandpackTemplatePreview template={template} isFullscreen={isFullscreen} />
                       </div>
@@ -280,6 +286,7 @@ export default function TemplatePreviewModal({
                           {template.previewCode?.react ? "App.tsx" : "index.html"}
                         </span>
                         <button
+                          type="button"
                           onClick={handleCopyCode}
                           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[0.72rem] transition-colors ${t.btn.accent} ${t.btn.accentHover}`}
                         >
@@ -390,12 +397,14 @@ export default function TemplatePreviewModal({
           <div className={`flex-shrink-0 px-6 py-4 border-t ${t.templates.topBarBg}`}>
             <div className="flex items-center justify-between">
               <button
+                type="button"
                 onClick={onClose}
                 className={`px-4 py-2 rounded-xl text-[0.82rem] transition-colors ${t.page.cardBgAlt} ${t.text.secondary} hover:${t.text.primary}`}
               >
                 返回列表
               </button>
               <button
+                type="button"
                 onClick={() => onUse(template)}
                 className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-[0.82rem] font-medium bg-gradient-to-r ${template.gradient} text-white shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 transition-all`}
               >
@@ -471,8 +480,7 @@ function SandpackTemplatePreview({ template, isFullscreen }: { template: Templat
     return (
       <iframe
         ref={iframeRef}
-        className="w-full border-0"
-        style={{ height: isFullscreen ? "calc(100vh - 120px)" : "420px", background: "#0b1729" }}
+        className={`w-full border-0 ${isFullscreen ? "h-[calc(100vh-120px)]" : "h-[420px]"}`}
         sandbox="allow-scripts allow-same-origin"
         title="Template Preview"
       />

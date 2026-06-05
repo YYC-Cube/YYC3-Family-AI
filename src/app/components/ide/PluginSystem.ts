@@ -203,7 +203,7 @@ export class PluginManager {
 
   register(manifest: PluginManifest): boolean {
     if (this.plugins.has(manifest.id)) {
-      console.warn(
+      logger.warn(
         `[PluginSystem] Plugin "${manifest.id}" is already registered`,
       );
       return false;

@@ -82,7 +82,7 @@ export async function applySnapshotFiles(
       fileStore.initializeProject(filesMap, files[0]?.path);
       result.successCount = files.length;
 
-      console.warn(
+      logger.warn(
         `[applySnapshotFiles] Initialized project with ${files.length} files`
       );
     } else {
@@ -97,14 +97,14 @@ export async function applySnapshotFiles(
             path: file.path,
             error: error instanceof Error ? error : new Error(String(error)),
           });
-          console.error(
+          logger.error(
             `[applySnapshotFiles] Failed to update file: ${file.path}`,
             error
           );
         }
       }
 
-      console.warn(
+      logger.warn(
         `[applySnapshotFiles] Updated ${result.successCount} files (${result.failedCount} failed)`
       );
     }

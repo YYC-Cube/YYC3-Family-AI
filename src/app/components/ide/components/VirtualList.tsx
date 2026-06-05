@@ -31,12 +31,12 @@
 // ================================================================
 
 import React, {
+  forwardRef,
   useCallback,
+  useImperativeHandle,
   useMemo,
   useRef,
   useState,
-  forwardRef,
-  useImperativeHandle,
 } from 'react';
 import { List, useListRef, type RowComponentProps } from 'react-window';
 
@@ -125,7 +125,7 @@ export const VirtualList = forwardRef(
       scrollToIndex,
     } = props;
 
-    const listRef = useListRef(null);
+    const listRef = useListRef<any>(null);
     const [internalScrollTop, setInternalScrollTop] = useState(0);
     const loadingRef = useRef(false);
 
@@ -254,7 +254,7 @@ export const VirtualList = forwardRef(
           {searchable && (
             <SearchBox
               value={searchQuery}
-              onChange={onSearchChange || (() => {})}
+              onChange={onSearchChange || (() => { })}
               placeholder={searchPlaceholder}
             />
           )}
@@ -270,14 +270,14 @@ export const VirtualList = forwardRef(
         {searchable && (
           <SearchBox
             value={searchQuery}
-            onChange={onSearchChange || (() => {})}
+            onChange={onSearchChange || (() => { })}
             placeholder={searchPlaceholder}
           />
         )}
         {sortable && sortConfig && (
           <SortHeader
             sortConfig={sortConfig}
-            onSortChange={onSortChange || (() => {})}
+            onSortChange={onSortChange || (() => { })}
           />
         )}
         <List
@@ -286,7 +286,7 @@ export const VirtualList = forwardRef(
           rowCount={itemCount}
           rowHeight={getItemHeight}
           overscanCount={overscan}
-          onRowsRendered={({ startIndex, stopIndex }) => handleItemsRendered({ visibleStartIndex: startIndex, visibleStopIndex: stopIndex })}
+          onRowsRendered={({ startIndex = 0, stopIndex = 0 }) => handleItemsRendered({ visibleStartIndex: startIndex, visibleStopIndex: stopIndex })}
           rowComponent={VirtualListRow as any}
           rowProps={rowProps}
         />

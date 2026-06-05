@@ -1,3 +1,4 @@
+import { logger } from "../services/Logger";
 /**
  * @file: ai/ErrorAnalyzer.ts
  * @description: 静态错误分析引擎，对 FileStore 中的文件执行 25+ 条规则检测，

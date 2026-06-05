@@ -60,7 +60,7 @@ language: zh-CN
 4. **部署配置**
    - 使用 GitHub Pages 静态站点托管
    - 正确配置了部署环境
-   - 部署 URL: https://family-ai.yyccube.com
+   - 部署 URL: https://family-ai.yyc3.vip
 
 5. **测试执行**
    - 使用 Vitest 运行测试
@@ -85,7 +85,7 @@ language: zh-CN
 
 9. **部署 URL 配置** ✅ 已统一
    - 所有 workflow 使用相同的部署 URL
-   - 统一使用 `https://family-ai.yyccube.com`
+   - 统一使用 `https://family-ai.yyc3.vip`
 
 10. **构建缓存优化** ✅ 已实施
     - 在 `ci-cd-enhanced.yml`、`ci-cd-intelligent.yml`、`ci-cd-multi-env.yml` 中添加了 pnpm 缓存
@@ -163,7 +163,7 @@ language: zh-CN
 
 **受影响文件**:
 - `ci-cd-basic.yml` (Line 64)
-- 其他 workflow 硬编码 `url: https://family-ai.yyccube.com`
+- 其他 workflow 硬编码 `url: https://family-ai.yyc3.vip`
 
 **修复状态**: ✅ 已完成
 - 统一所有 workflow 使用硬编码 URL

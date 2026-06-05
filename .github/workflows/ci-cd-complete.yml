@@ -236,7 +236,7 @@ jobs:
           echo "Build size: $BUILD_SIZE"
 
       - name: Upload build artifact
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v5
         with:
           path: ./dist
 
@@ -247,7 +247,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
     environment:
       name: github-pages
-      url: https://family-ai.yyccube.com
+      url: https://family-ai.yyc3.vip
     runs-on: ubuntu-latest
     steps:
       - name: Deploy to GitHub Pages

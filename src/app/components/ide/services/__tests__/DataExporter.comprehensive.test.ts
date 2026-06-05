@@ -3,7 +3,15 @@
  * @description DataExporter 全面测试 - 数据导出功能
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
+
+vi.mock('../../../adapters/IndexedDBAdapter', () => ({
+  getDB: vi.fn().mockRejectedValue(new Error('IndexedDB not available in test')),
+  saveFiles: vi.fn(),
+  loadAllFiles: vi.fn().mockResolvedValue({}),
+  deleteProject: vi.fn(),
+}))
+
 import { DataExporter } from '../DataExporter'
 
 describe('DataExporter - 静态方法', () => {
@@ -14,7 +22,8 @@ describe('DataExporter - 静态方法', () => {
 
   it('exportAllData应该返回Promise', async () => {
     const result = DataExporter.exportAllData()
-    
+    result.catch(() => { })
+
     expect(result instanceof Promise).toBe(true)
   })
 })
@@ -24,7 +33,7 @@ describe('DataExporter - 导出数据结构', () => {
   it('exportAllData应该返回有效的ExportData结构', async () => {
     try {
       const data = await DataExporter.exportAllData()
-      
+
       if (data) {
         expect(data).toHaveProperty('version')
         expect(data).toHaveProperty('exportedAt')
@@ -44,7 +53,7 @@ describe('DataExporter - 导出数据结构', () => {
   it('exportedAt应该是有效的ISO日期格式', async () => {
     try {
       const data = await DataExporter.exportAllData()
-      
+
       if (data) {
         const date = new Date(data.exportedAt)
         expect(date.getTime()).not.toBeNaN()
@@ -57,7 +66,7 @@ describe('DataExporter - 导出数据结构', () => {
   it('version应该是有效的版本号', async () => {
     try {
       const data = await DataExporter.exportAllData()
-      
+
       if (data) {
         expect(typeof data.version).toBe('string')
         expect(data.version.length).toBeGreaterThan(0)
@@ -74,7 +83,7 @@ describe('DataExporter - 边界情况', () => {
     try {
       const result1 = await DataExporter.exportAllData()
       const result2 = await DataExporter.exportAllData()
-      
+
       if (result1 && result2) {
         // exportedAt应该不同（时间戳）
         expect(result1.exportedAt).not.toBe(result2.exportedAt)
@@ -87,7 +96,7 @@ describe('DataExporter - 边界情况', () => {
   it('localStorage应该是对象类型', async () => {
     try {
       const data = await DataExporter.exportAllData()
-      
+
       if (data) {
         expect(typeof data.localStorage).toBe('object')
         expect(Array.isArray(data.localStorage)).toBe(false)
@@ -100,7 +109,7 @@ describe('DataExporter - 边界情况', () => {
   it('indexedDB.files应该是数组', async () => {
     try {
       const data = await DataExporter.exportAllData()
-      
+
       if (data) {
         expect(Array.isArray(data.indexedDB.files)).toBe(true)
         expect(Array.isArray(data.indexedDB.projects)).toBe(true)

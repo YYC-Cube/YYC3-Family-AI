@@ -201,7 +201,8 @@ export class StorageManager {
         const db = request.result;
         let size = 0;
 
-        const transaction = db.transaction(db.objectStoreNames, 'readonly');
+        const objectStoreNames = Array.from(db.objectStoreNames);
+        const transaction = db.transaction(objectStoreNames, 'readonly');
 
         for (const storeName of Array.from(db.objectStoreNames)) {
           const store = transaction.objectStore(storeName);
@@ -510,7 +511,7 @@ export function getStorageManager(config?: Partial<StorageManagerConfig>): Stora
 
 // ── React Hook ──
 
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 export interface UseStorageManagerResult {
   quota: StorageQuota | null;

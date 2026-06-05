@@ -280,7 +280,7 @@ export class AsyncErrorBoundary extends Component<
     };
 
     if (logErrors) {
-      console.error('[AsyncErrorBoundary] Error caught:', {
+      logger.error('[AsyncErrorBoundary] Error caught:', {
         message: error.message,
         stack: error.stack,
         componentStack: errorInfo?.componentStack,

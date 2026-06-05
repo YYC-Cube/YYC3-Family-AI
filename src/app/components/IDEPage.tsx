@@ -13,63 +13,61 @@
  * @tags: ide,layout,panels,routing,dnd,preview,command-palette,minimap,floating,tab-groups,wave3
  */
 
-import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
-import { useNavigate, useParams, useLocation } from "react-router";
+import React, { lazy, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
+import { useLocation, useNavigate, useParams } from "react-router";
+import AgentMarket from "./ide/AgentMarket";
+import AgentOrchestrator from "./ide/AgentOrchestrator";
+import CenterPanel from "./ide/CenterPanel";
+import CodeQualityDashboard from "./ide/CodeQualityDashboard";
+import CollabPanel from "./ide/CollabPanel";
+import CommandPalette from "./ide/CommandPalette";
+import { ConfirmDialogContainer } from "./ide/ConfirmDialogContainer";
+import DocumentEditor from "./ide/DocumentEditor";
+import ErrorDiagnosticsPanel from "./ide/ErrorDiagnosticsPanel";
+import { FileStoreProvider, useFileStore } from "./ide/FileStore";
+import FloatingPanelContainer from "./ide/FloatingPanelContainer";
+import GitPanel from "./ide/GitPanel";
+import { useMultiInstanceSync } from "./ide/hooks/useMultiInstanceSync";
+import { useSettingsSync } from "./ide/hooks/useSettingsSync";
+import KeyboardShortcutsHelp from "./ide/KeyboardShortcutsHelp";
+import KnowledgeBase from "./ide/KnowledgeBase";
+import LeftPanel from "./ide/LeftPanel";
+import { ModelRegistryProvider } from "./ide/ModelRegistry";
+import MultiInstancePanel from "./ide/MultiInstancePanel";
+import OpsPanel from "./ide/OpsPanel";
+import PanelLayoutManager from "./ide/PanelLayoutManager";
 import {
-  PanelManagerProvider,
-  PanelLayoutArea,
+  LAYOUT_PRESETS,
   LayoutResetButton,
+  PanelLayoutArea,
+  PanelManagerProvider,
   usePanelManager,
   type PanelId,
-  LAYOUT_PRESETS,
 } from "./ide/PanelManager";
-import PanelQuickAccess from "./ide/PanelQuickAccess";
-import PanelLayoutManager from "./ide/PanelLayoutManager";
-import CommandPalette from "./ide/CommandPalette";
 import PanelMinimap from "./ide/PanelMinimap";
-import KeyboardShortcutsHelp from "./ide/KeyboardShortcutsHelp";
+import PanelQuickAccess from "./ide/PanelQuickAccess";
+import PerformancePanel from "./ide/PerformancePanel";
+import { PromptDialogContainer } from "./ide/PromptDialogContainer";
+import QuickActionsBar from "./ide/QuickActionsBar";
+import RAGChat from "./ide/RAGChat";
+import RightPanel from "./ide/RightPanel";
+import SecurityPanel from "./ide/SecurityPanel";
+import { useQuickActionsStore } from "./ide/stores/useQuickActionsStore";
+import TabGroupBar from "./ide/TabGroupBar";
+import TaskBoardPanel from "./ide/TaskBoardPanel";
+import TerminalPanel from "./ide/TerminalPanel";
+import TestGeneratorPanel from "./ide/TestGeneratorPanel";
+import { ToastContainer } from "./ide/ToastContainer";
 import TopBar from "./ide/TopBar";
 import ViewSwitcher, { type ViewMode } from "./ide/ViewSwitcher";
-import LeftPanel from "./ide/LeftPanel";
-import CenterPanel from "./ide/CenterPanel";
-import RightPanel from "./ide/RightPanel";
-import GitPanel from "./ide/GitPanel";
-import AgentOrchestrator from "./ide/AgentOrchestrator";
-import AgentMarket from "./ide/AgentMarket";
-import KnowledgeBase from "./ide/KnowledgeBase";
-import RAGChat from "./ide/RAGChat";
-import CollabPanel from "./ide/CollabPanel";
-import OpsPanel from "./ide/OpsPanel";
-import WorkflowPipeline from "./ide/WorkflowPipeline";
-import Terminal from "./ide/Terminal";
-import TerminalPanel from "./ide/TerminalPanel";
-import RealtimePreviewPanel from "./ide/RealtimePreviewPanel";
-import ErrorDiagnosticsPanel from "./ide/ErrorDiagnosticsPanel";
-import PerformancePanel from "./ide/PerformancePanel";
-import SecurityPanel from "./ide/SecurityPanel";
-import TestGeneratorPanel from "./ide/TestGeneratorPanel";
-import CodeQualityDashboard from "./ide/CodeQualityDashboard";
-import DocumentEditor from "./ide/DocumentEditor";
-import APIKeySettingsUI from "./ide/APIKeySettingsUI";
-import { ModelSettings } from "./ide/ModelSettings";
-import { ModelRegistryProvider } from "./ide/ModelRegistry";
-import { FileStoreProvider } from "./ide/FileStore";
 import { WorkflowEventBusProvider } from "./ide/WorkflowEventBus";
-import FloatingPanelContainer from "./ide/FloatingPanelContainer";
-import TabGroupBar from "./ide/TabGroupBar";
-import { useSettingsSync } from "./ide/hooks/useSettingsSync";
-import QuickActionsBar from "./ide/QuickActionsBar";
-import { useQuickActionsStore } from "./ide/stores/useQuickActionsStore";
-import { ToastContainer } from "./ide/ToastContainer";
-import { ConfirmDialogContainer } from "./ide/ConfirmDialogContainer";
-import { PromptDialogContainer } from "./ide/PromptDialogContainer";
-import TaskBoardPanel from "./ide/TaskBoardPanel";
-import MultiInstancePanel from "./ide/MultiInstancePanel";
-import { useMultiInstanceSync } from "./ide/hooks/useMultiInstanceSync";
-import { useFileStore } from "./ide/FileStore";
+import WorkflowPipeline from "./ide/WorkflowPipeline";
 import { ALL_TEMPLATES } from "./TemplatesPage";
+const RealtimePreviewPanel = lazy(() => import("./ide/RealtimePreviewPanel"));
+const APIKeySettingsUI = lazy(() => import("./ide/APIKeySettingsUI"));
+const ModelSettings = lazy(() => import("./ide/ModelSettings").then((m) => ({ default: m.ModelSettings })));
 
 // ── Multi-Instance Sync Bridge (must be inside FileStoreProvider) ──
 function MultiInstanceSyncBridge() {
@@ -248,7 +246,7 @@ export default function IDEPage() {
         case "workflow":
           return <WorkflowPipeline nodeId={nodeId} />;
         case "preview":
-          return <RealtimePreviewPanel nodeId={nodeId} />;
+          return <React.Suspense fallback={<div className="flex items-center justify-center h-full"><div className="animate-spin w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full" ></div></div>}><RealtimePreviewPanel nodeId={nodeId} /></React.Suspense>;
         case "diagnostics":
           return <ErrorDiagnosticsPanel nodeId={nodeId} />;
         case "performance":
@@ -325,8 +323,8 @@ export default function IDEPage() {
                   )}
                 </div>
               </div>
-              <APIKeySettingsUI />
-              <ModelSettings />
+              <React.Suspense fallback={<div className="flex items-center justify-center p-4"><div className="animate-spin w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full" /></div>}><APIKeySettingsUI /></React.Suspense>
+              <React.Suspense fallback={<div className="flex items-center justify-center p-4"><div className="animate-spin w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full" /></div>}><ModelSettings /></React.Suspense>
               <CommandPalette
                 open={commandPaletteOpen}
                 onClose={() => setCommandPaletteOpen(false)}
@@ -374,5 +372,5 @@ function PreviewLayout({ renderPanel }: PreviewLayoutProps) {
 
 /* ===== Preview Content ===== */
 function PreviewContent() {
-  return <RealtimePreviewPanel nodeId="preview-main" />;
+  return <React.Suspense fallback={<div className="flex items-center justify-center h-full"><div className="animate-spin w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full" /></div>}><RealtimePreviewPanel nodeId="preview-main" /></React.Suspense>;
 }

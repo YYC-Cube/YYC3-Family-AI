@@ -4,7 +4,7 @@
  * @version: 1.0.0
  */
 
-import { openDB, IDBPDatabase } from 'idb';
+import { IDBPDatabase, openDB } from 'idb';
 
 const DB_NAME = 'yyc3-api-vault';
 const DB_VERSION = 1;
@@ -224,7 +224,7 @@ class APIKeyVault {
 
   maskKey(key: string): string {
     if (key.length <= 8) return '****';
-    return `${key.slice(0, 4)  }****${  key.slice(-4)}`;
+    return `${key.slice(0, 4)}****${key.slice(-4)}`;
   }
 
   validateKey(provider: ProviderId, key: string): { valid: boolean; error?: string } {
@@ -272,7 +272,7 @@ class APIKeyVault {
   async getKey(id: string): Promise<string | null> {
     if (!this.db) await this.init();
 
-    const config = await this.db!.get(STORE_NAME, id);
+    const config: any = await this.db!.get(STORE_NAME, id);
     if (!config) return null;
 
     try {
@@ -281,7 +281,7 @@ class APIKeyVault {
       await this.db!.put(STORE_NAME, {
         ...config,
         lastUsed: new Date().toISOString(),
-        usageCount: config.usageCount + 1,
+        usageCount: (config.usageCount || 0) + 1,
       });
 
       return decrypted;
@@ -304,7 +304,7 @@ class APIKeyVault {
   async listKeys(): Promise<APIKeyConfig[]> {
     if (!this.db) await this.init();
 
-    const keys = await this.db!.getAll(STORE_NAME);
+    const keys: any[] = await this.db!.getAll(STORE_NAME);
     return keys.map(k => ({ ...k, apiKey: this.maskKey(k.apiKey) }));
   }
 

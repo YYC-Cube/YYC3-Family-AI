@@ -167,7 +167,7 @@ export class BoundaryTestSuite {
    * 测试超大文件
    */
   private async testLargeFile(): Promise<LargeFileTestResult> {
-    console.warn(
+    logger.warn(
       `  [LargeFileTest] Testing large file (${this.config.largeFileSize} bytes)...`,
     );
 
@@ -317,7 +317,7 @@ export class BoundaryTestSuite {
    * 测试并发冲突
    */
   private async testConcurrencyConflicts(): Promise<ConflictTestResult> {
-    console.warn(
+    logger.warn(
       `  [ConflictTest] Testing ${this.config.conflictCount} conflict scenarios...`,
     );
 
@@ -391,7 +391,7 @@ export class BoundaryTestSuite {
     logger.warn('[ConflictTest] Total conflicts: ${totalConflicts}');
     logger.warn('[ConflictTest] Resolved: ${resolvedConflicts}');
     logger.warn('[ConflictTest] Unresolved: ${unresolvedConflicts}');
-    console.warn(
+    logger.warn(
       `  [ConflictTest] Average resolution time: ${averageResolutionTime.toFixed(2)}ms`,
     );
 

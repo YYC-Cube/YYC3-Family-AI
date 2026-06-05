@@ -255,8 +255,8 @@ class BackupServiceClass {
       if (!db.objectStoreNames.contains(BACKUP_STORE)) {
         return null
       }
-      const backup = await db.get(BACKUP_STORE, id)
-      return backup || null
+      const backup = await db.get<any>(BACKUP_STORE, id)
+      return (backup as any) || null
     } catch (e) {
       logger.error('Failed to get backup', e, 'BackupService')
       return null

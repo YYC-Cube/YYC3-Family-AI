@@ -30,7 +30,7 @@ complexity: intermediate
 | 维度 | 说明 |
 |------|------|
 | **运行环境** | Figma iframe 环境 |
-| **部署 URL** | https://family-ai.yyccube.com |
+| **部署 URL** | https://family-ai.yyc3.vip |
 | **项目类型** | 多联式低码智能编程平台 |
 | **技术栈** | React 18 + TypeScript 5.8 + Tailwind CSS v4 |
 | **状态管理** | Zustand (15+ stores) |
@@ -124,7 +124,7 @@ Reverse Engineer Figma Design from Existing Code
 
 Context:
 - Project: YYC³ Family AI
-- Deployment: https://family-ai.yyccube.com
+- Deployment: https://family-ai.yyc3.vip
 - Tech Stack: React 18 + TypeScript 5.8 + Tailwind CSS v4
 - Runtime: Figma iframe environment
 - Status: Code is complete, design needs to sync

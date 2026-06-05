@@ -8,21 +8,9 @@
  * @status: stable
  * @license: MIT
  * @copyright: Copyright (c) 2026 YanYuCloudCube Team
- * @tags: component,react,ui,ui
+ * @tags: ui,dialog,radix-ui,modal
  */
 
-/**
- * file: ui/dialog.tsx
- * description: 对话框组件 - 基于 Radix UI Dialog，支持触发器、门户、关闭等功能
- * author: YanYuCloudCube Team <admin@0379.email>
- * version: v1.0.0
- * created: 2026-03-19
- * updated: 2026-03-19
- * status: stable
- * license: MIT
- * copyright: Copyright (c) 2026 YanYuCloudCube Team
- * tags: ui,dialog,radix-ui,modal
- */
 
 "use client";
 

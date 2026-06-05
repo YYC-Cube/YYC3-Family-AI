@@ -123,6 +123,9 @@ export function applySafariPolyfills(): void {
         this.scrollHandler = () => this.checkVisibility();
       }
 
+      // TS 6.0+: required by IntersectionObserver type
+      readonly scrollMargin: string = '';
+
       observe(target: Element): void {
         this.elements.add(target);
         window.addEventListener('scroll', this.scrollHandler, { passive: true });
@@ -163,8 +166,7 @@ export function applySafariPolyfills(): void {
             time: Date.now(),
           } as IntersectionObserverEntry);
         });
-        // @ts-expect-error IntersectionObserver polyfill type compatibility
-        this.callback(entries, self as unknown as IntersectionObserver);
+        this.callback(entries, self);
       }
     };
   }

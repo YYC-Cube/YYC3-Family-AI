@@ -8,21 +8,9 @@
  * @status: stable
  * @license: MIT
  * @copyright: Copyright (c) 2026 YanYuCloudCube Team
- * @tags: component,react,ui,ui
+ * @tags: ui,tabs,radix-ui,navigation
  */
 
-/**
- * file: ui/tabs.tsx
- * description: 标签页组件 - 基于 Radix UI Tabs，支持标签页切换、列表、内容、触发器
- * author: YanYuCloudCube Team <admin@0379.email>
- * version: v1.0.0
- * created: 2026-03-19
- * updated: 2026-03-19
- * status: stable
- * license: MIT
- * copyright: Copyright (c) 2026 YanYuCloudCube Team
- * tags: ui,tabs,radix-ui,navigation
- */
 
 "use client";
 

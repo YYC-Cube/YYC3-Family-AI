@@ -13,36 +13,36 @@
  * @tags: topbar,navigation,toolbar,export,theme
  */
 
-import { useState, useRef, useEffect, useCallback } from "react";
 import {
-  Wrench,
-  FolderOpen,
-  Zap,
   Bell,
-  Settings,
-  Share2,
-  Rocket,
-  User,
-  GitBranch,
-  Search,
-  Command,
-  Home,
-  X,
-  Pencil,
   Check,
+  Command,
   Download,
   FileArchive,
   FileJson,
+  FolderOpen,
+  GitBranch,
+  Home,
+  Pencil,
+  Rocket,
+  Search,
+  Settings,
+  Share2,
+  User,
+  Wrench,
+  X,
+  Zap,
 } from "lucide-react";
-import ThemeSwitcher from "./ThemeSwitcher";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { exportAsJson, exportAsZip } from "./adapters/ProjectExporter";
+import { useFileStore } from "./FileStore";
+import ConnectivityIndicator from "./left-panel/ConnectivityIndicator";
+import ModelSelector from "./left-panel/ModelSelector";
+import { useModelRegistry } from "./ModelRegistry";
 import NotificationDrawer from "./NotificationDrawer";
 import ShareDialog from "./ShareDialog";
-import { useFileStore } from "./FileStore";
-import { exportAsZip, exportAsJson } from "./adapters/ProjectExporter";
+import ThemeSwitcher from "./ThemeSwitcher";
 import yyc3Logo from "/Web App/favicon-32.png";
-import ModelSelector from "./left-panel/ModelSelector";
-import ConnectivityIndicator from "./left-panel/ConnectivityIndicator";
-import { useModelRegistry } from "./ModelRegistry";
 
 interface TopBarProps {
   projectName: string;
@@ -206,6 +206,8 @@ export default function TopBar({
               <input
                 ref={editInputRef}
                 type="text"
+                placeholder="项目名称"
+                aria-label="编辑项目名称"
                 value={editName}
                 onChange={(e) => setEditName(e.target.value)}
                 onBlur={handleNameSubmit}
@@ -219,6 +221,9 @@ export default function TopBar({
                 className="bg-[var(--ide-bg-elevated)] border border-[var(--ide-accent-solid)]/50 rounded px-1.5 py-0.5 text-[0.78rem] text-[var(--ide-text-bright)] outline-none w-[140px]"
               />
               <button
+                type="button"
+                aria-label="确认修改"
+                title="确认修改"
                 onClick={handleNameSubmit}
                 className="w-5 h-5 rounded flex items-center justify-center hover:bg-white/10 transition-colors"
               >
@@ -241,11 +246,10 @@ export default function TopBar({
         {/* Center Command/Search Bar */}
         <div className="flex-1 flex justify-center px-4">
           <div
-            className={`relative flex items-center w-full max-w-[400px] h-7 rounded-md transition-all ${
-              searchFocused
-                ? "bg-[var(--ide-bg-elevated)] border border-[var(--ide-accent-solid)]/50 shadow-sm shadow-[var(--ide-accent-solid)]/10"
-                : "bg-[var(--ide-bg-inset)] border border-[var(--ide-border-dim)] hover:border-[var(--ide-border)]"
-            }`}
+            className={`relative flex items-center w-full max-w-[400px] h-7 rounded-md transition-all ${searchFocused
+              ? "bg-[var(--ide-bg-elevated)] border border-[var(--ide-accent-solid)]/50 shadow-sm shadow-[var(--ide-accent-solid)]/10"
+              : "bg-[var(--ide-bg-inset)] border border-[var(--ide-border-dim)] hover:border-[var(--ide-border)]"
+              }`}
           >
             <Search className="w-3 h-3 text-[var(--ide-text-dim)] ml-2 flex-shrink-0" />
             <input
@@ -259,6 +263,9 @@ export default function TopBar({
             />
             {searchValue && (
               <button
+                type="button"
+                aria-label="清除搜索"
+                title="清除搜索"
                 onClick={() => setSearchValue("")}
                 className="mr-1 w-4 h-4 rounded-full flex items-center justify-center hover:bg-white/10"
               >
@@ -299,7 +306,7 @@ export default function TopBar({
               if (!activeModel) return undefined;
               return providers.find((p: any) => p.id === activeModel.providerId);
             }}
-            setConnectivityResult={() => {}}
+            setConnectivityResult={() => { }}
           />
         </div>
 
@@ -319,17 +326,15 @@ export default function TopBar({
               <button
                 key={item.action}
                 onClick={() => handleToolClick(item.action)}
-                className={`relative w-7 h-7 rounded flex items-center justify-center transition-all ${
-                  isActive
-                    ? "bg-[var(--ide-accent-bg)] ring-1 ring-[var(--ide-accent-solid)]/30"
-                    : "hover:bg-white/[0.08]"
-                }`}
+                className={`relative w-7 h-7 rounded flex items-center justify-center transition-all ${isActive
+                  ? "bg-[var(--ide-accent-bg)] ring-1 ring-[var(--ide-accent-solid)]/30"
+                  : "hover:bg-white/[0.08]"
+                  }`}
                 title={item.tooltip}
               >
                 <item.icon
-                  className={`w-4 h-4 ${
-                    isActive ? "text-[var(--ide-accent)]" : item.color
-                  }`}
+                  className={`w-4 h-4 ${isActive ? "text-[var(--ide-accent)]" : item.color
+                    }`}
                 />
                 {"badge" in item && item.badge && (
                   <span className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 bg-red-500 text-white text-[0.5rem] rounded-full flex items-center justify-center">
@@ -355,11 +360,10 @@ export default function TopBar({
           <div className="relative" ref={exportMenuRef}>
             <button
               onClick={() => setShowExportMenu((v) => !v)}
-              className={`w-7 h-7 rounded flex items-center justify-center transition-all ${
-                showExportMenu
-                  ? "bg-[var(--ide-accent-bg)] ring-1 ring-[var(--ide-accent-solid)]/30"
-                  : "hover:bg-white/[0.08]"
-              }`}
+              className={`w-7 h-7 rounded flex items-center justify-center transition-all ${showExportMenu
+                ? "bg-[var(--ide-accent-bg)] ring-1 ring-[var(--ide-accent-solid)]/30"
+                : "hover:bg-white/[0.08]"
+                }`}
               title="导出项目"
             >
               <Download

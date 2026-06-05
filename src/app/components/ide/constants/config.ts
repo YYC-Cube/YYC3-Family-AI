@@ -45,6 +45,12 @@ export const EDITOR_WORD_WRAP = "on" as const;
 export const EDITOR_LINE_NUMBERS = "on" as const;
 export const EDITOR_SCROLL_BEYOND_LAST_LINE = false;
 
+// ── 模型存储配置 ──
+export const MODEL_STORAGE_PATH = "/Users/yanyu/models";
+export const MODEL_STORAGE_BLOBS = `${MODEL_STORAGE_PATH}/blobs`;
+export const MODEL_STORAGE_MANIFESTS = `${MODEL_STORAGE_PATH}/manifests`;
+export const OLLAMA_MODELS_ENV = "OLLAMA_MODELS";
+
 // ── AI 配置 ──
 export const AI_DEFAULT_PROVIDER = "openai";
 export const AI_DEFAULT_MODEL = "gpt-4o";

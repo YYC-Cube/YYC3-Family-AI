@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { logger } from "../services/Logger";
 /**
  * @file: stores/selectors.ts
  * @description: Zustand 细粒度 Selector 工具，优化订阅性能，避免过度渲染
@@ -12,10 +13,10 @@
  * @tags: stores,zustand,selectors,performance,optimization
  */
 
-import { useStore } from "zustand";
+import { useCallback, useMemo } from "react";
 import type { StoreApi } from "zustand";
+import { useStore } from "zustand";
 import { shallow } from "zustand/shallow";
-import { useMemo, useCallback } from "react";
 
 // ===== 通用 Selector 工具 =====
 
@@ -73,7 +74,7 @@ export function useStorePerformanceMonitor(
     if (!isDev) return;
     const timestamp = new Date().toISOString();
     const keysInfo = selectedKeys ? ` [${selectedKeys.join(", ")}]` : "";
-    console.warn(
+    logger.warn(
       `[Zustand Perf] ${timestamp} ${componentName} subscribed to ${storeName}${keysInfo}`,
     );
   }, []);

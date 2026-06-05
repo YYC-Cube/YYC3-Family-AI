@@ -13,48 +13,50 @@
  * @tags: ai,chat,fullscreen,streaming,models,unified
  */
 
-import yyc3Logo from "/macOS/512.png";
-import { useState, useRef, useEffect, useCallback } from "react";
-import { useNavigate, useLocation } from "react-router";
 import {
-  Send,
+  AlertCircle,
+  ArrowLeft,
   Bot,
-  User,
-  Copy,
   Check,
   ChevronDown,
-  Key,
-  Settings2,
-  Server,
   Cloud,
-  Sparkles,
-  Square,
-  RefreshCw,
-  AlertCircle,
-  Wifi,
-  WifiOff,
-  ArrowLeft,
-  Trash2,
-  MessageSquare,
-  Lightbulb,
   Code2,
-  FileCode2,
-  Layers,
-  Wand2,
-  Zap,
-  History,
-  Plus,
-  PanelLeft,
+  Copy,
   Download,
+  FileCode2,
+  History,
+  Key,
+  Lightbulb,
+  MessageSquare,
+  PanelLeft,
+  Plus,
+  RefreshCw,
+  Send,
+  Server,
+  Settings2,
+  Square,
+  Trash2,
   Upload,
+  User,
+  Wand2,
+  Wifi,
+  Zap
 } from "lucide-react";
-import { motion, AnimatePresence } from "motion/react";
-import { copyToClipboard } from "./ide/utils/clipboard";
-import { useModelRegistry } from "./ide/ModelRegistry";
-import { ModelRegistryProvider } from "./ide/ModelRegistry";
-import { FileStoreProvider } from "./ide/FileStore";
+import { AnimatePresence, motion } from "motion/react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useLocation, useNavigate } from "react-router";
 import APIKeySettingsUI from "./ide/APIKeySettingsUI";
-import { ModelSettings } from "./ide/ModelSettings";
+import {
+  createSessionId,
+  deleteSession,
+  importFromScope,
+  listSessions,
+  loadMessages,
+  saveMessages,
+  type ChatSession,
+  type PersistedMessage,
+} from "./ide/ChatHistoryStore";
+import { FileStoreProvider } from "./ide/FileStore";
 import {
   chatCompletionStream,
   extractCodeBlock,
@@ -62,18 +64,11 @@ import {
   type ChatMessage as LLMMessage,
   type ProviderId,
 } from "./ide/LLMService";
-import {
-  saveMessages,
-  loadMessages,
-  listSessions,
-  createSessionId,
-  deleteSession,
-  importFromScope,
-  type PersistedMessage,
-  type ChatSession,
-} from "./ide/ChatHistoryStore";
+import { ModelRegistryProvider, useModelRegistry } from "./ide/ModelRegistry";
+import { ModelSettings } from "./ide/ModelSettings";
 import { useThemeTokens } from "./ide/hooks/useThemeTokens";
-import { BUILTIN_PROVIDERS } from "./ide/constants/providers";
+import { copyToClipboard } from "./ide/utils/clipboard";
+import yyc3Logo from "/macOS/512.png";
 
 // ===================================================================
 //  Types & Constants
@@ -436,10 +431,10 @@ function AIChatInner() {
             prev.map((m) =>
               m.id === assistantMsgId
                 ? {
-                    ...m,
-                    isStreaming: false,
-                    codeBlock: codeBlock || undefined,
-                  }
+                  ...m,
+                  isStreaming: false,
+                  codeBlock: codeBlock || undefined,
+                }
                 : m,
             ),
           );
@@ -451,11 +446,11 @@ function AIChatInner() {
             prev.map((m) =>
               m.id === assistantMsgId
                 ? {
-                    ...m,
-                    isStreaming: false,
-                    error: errorMsg,
-                    content: m.content || "",
-                  }
+                  ...m,
+                  isStreaming: false,
+                  error: errorMsg,
+                  content: m.content || "",
+                }
                 : m,
             ),
           );
@@ -532,11 +527,10 @@ function AIChatInner() {
               setShowSidebar(!showSidebar);
               setSessionList(listSessions("chat"));
             }}
-            className={`flex items-center gap-1 px-2 py-1.5 rounded-lg text-[0.72rem] transition-all ${
-              showSidebar
+            className={`flex items-center gap-1 px-2 py-1.5 rounded-lg text-[0.72rem] transition-all ${showSidebar
                 ? t.interactive.activeBtn
                 : `${t.interactive.ghostBtn} ${t.interactive.hoverBg}`
-            }`}
+              }`}
             title="对话历史"
           >
             <History className="w-3.5 h-3.5" />
@@ -589,15 +583,14 @@ function AIChatInner() {
             <button
               onClick={handlePing}
               disabled={connStatus === "testing"}
-              className={`flex items-center gap-1 px-2 py-1 rounded-md text-[0.65rem] transition-all border ${
-                connStatus === "success"
+              className={`flex items-center gap-1 px-2 py-1 rounded-md text-[0.65rem] transition-all border ${connStatus === "success"
                   ? "text-emerald-400 border-emerald-500/20"
                   : connStatus === "fail"
                     ? "text-red-400 border-red-500/20"
                     : connStatus === "testing"
                       ? "text-sky-400 border-sky-500/20"
                       : `${t.interactive.ghostBtn} border-transparent`
-              }`}
+                }`}
               title="测试连通性"
             >
               {connStatus === "testing" ? (
@@ -642,11 +635,10 @@ function AIChatInner() {
                     {activeModel.name}
                   </span>
                   <div
-                    className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
-                      activeModel.status === "active"
+                    className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${activeModel.status === "active"
                         ? "bg-emerald-500"
                         : "bg-slate-600"
-                    }`}
+                      }`}
                   />
                 </>
               ) : (
@@ -701,23 +693,21 @@ function AIChatInner() {
                               setActiveModelId(model.id);
                               setShowModelDropdown(false);
                             }}
-                            className={`w-full flex items-center gap-2 px-3 py-2 text-[0.72rem] transition-colors ${
-                              model.id === activeModelId
+                            className={`w-full flex items-center gap-2 px-3 py-2 text-[0.72rem] transition-colors ${model.id === activeModelId
                                 ? t.interactive.activeBtn
                                 : model.status === "active"
                                   ? `${t.text.secondary} ${t.interactive.hoverBg}`
                                   : "text-white/25 hover:bg-white/[0.02]"
-                            }`}
+                              }`}
                           >
                             <span className="flex-1 text-left truncate">
                               {model.name}
                             </span>
                             <div
-                              className={`w-1.5 h-1.5 rounded-full ${
-                                model.status === "active"
+                              className={`w-1.5 h-1.5 rounded-full ${model.status === "active"
                                   ? "bg-emerald-500"
                                   : "bg-slate-600"
-                              }`}
+                                }`}
                             />
                           </button>
                         ))}
@@ -793,22 +783,19 @@ function AIChatInner() {
                   <div
                     key={s.id}
                     onClick={() => handleLoadSession(s)}
-                    className={`flex items-start gap-2 px-3 py-2.5 mx-1 rounded-lg cursor-pointer transition-all group ${
-                      s.id === sessionId
+                    className={`flex items-start gap-2 px-3 py-2.5 mx-1 rounded-lg cursor-pointer transition-all group ${s.id === sessionId
                         ? t.interactive.sessionItemActive
                         : t.interactive.sessionItem
-                    }`}
+                      }`}
                   >
                     <MessageSquare
-                      className={`w-3.5 h-3.5 flex-shrink-0 mt-0.5 ${
-                        s.id === sessionId ? t.text.accent : t.text.caption
-                      }`}
+                      className={`w-3.5 h-3.5 flex-shrink-0 mt-0.5 ${s.id === sessionId ? t.text.accent : t.text.caption
+                        }`}
                     />
                     <div className="flex-1 min-w-0">
                       <div
-                        className={`text-[0.72rem] truncate ${
-                          s.id === sessionId ? t.text.label : t.text.tertiary
-                        }`}
+                        className={`text-[0.72rem] truncate ${s.id === sessionId ? t.text.label : t.text.tertiary
+                          }`}
                       >
                         {s.title}
                       </div>
@@ -848,11 +835,10 @@ function AIChatInner() {
                   setIdeSessionList(listSessions("ide"));
                   setShowImportIDE(!showImportIDE);
                 }}
-                className={`w-full flex items-center gap-1.5 px-2 py-1.5 rounded-lg text-[0.65rem] mb-1.5 transition-all border ${
-                  showImportIDE
+                className={`w-full flex items-center gap-1.5 px-2 py-1.5 rounded-lg text-[0.65rem] mb-1.5 transition-all border ${showImportIDE
                     ? t.interactive.importBtnActive
                     : t.interactive.importBtn
-                }`}
+                  }`}
               >
                 <Upload className="w-3 h-3" />
                 <span>从 IDE 导入对话</span>
@@ -949,8 +935,8 @@ function AIChatInner() {
                 深度技术对话 · 代码分析优化 · 学习指导 · 方案推荐
               </p>
 
-              {/* Quick starters */}
-              <div className="grid grid-cols-2 gap-2 max-w-lg mx-auto">
+              {/* Quick starters — 一排 */}
+              <div className="flex gap-2 overflow-x-auto pb-2 max-w-2xl mx-auto">
                 {QUICK_STARTERS.map((item, i) => (
                   <motion.button
                     key={i}
@@ -961,18 +947,13 @@ function AIChatInner() {
                       setChatInput(item.label);
                       inputRef.current?.focus();
                     }}
-                    className={`flex items-center gap-2.5 px-3.5 py-3 rounded-xl text-left transition-all border ${t.page.cardBorder} ${t.text.tertiary} ${t.interactive.hoverBgStrong}`}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-xl text-left transition-all border ${t.page.cardBorder} ${t.text.tertiary} ${t.interactive.hoverBgStrong} shrink-0`}
                   >
                     <item.icon
-                      className={`w-4 h-4 flex-shrink-0 ${t.text.muted}`}
+                      className={`w-3.5 h-3.5 flex-shrink-0 ${t.text.muted}`}
                     />
-                    <div className="min-w-0">
-                      <div className="text-[0.75rem] truncate">
-                        {item.label}
-                      </div>
-                      <div className={`text-[0.6rem] mt-0.5 ${t.text.dim}`}>
-                        {item.category}
-                      </div>
+                    <div className="text-[0.72rem] whitespace-nowrap">
+                      {item.label}
                     </div>
                   </motion.button>
                 ))}
@@ -1011,13 +992,12 @@ function AIChatInner() {
 
                     {/* Message bubble */}
                     <div
-                      className={`rounded-2xl px-4 py-3 ${
-                        msg.role === "user"
+                      className={`rounded-2xl px-4 py-3 ${msg.role === "user"
                           ? t.chat.userBubble
                           : msg.error
                             ? "bg-red-500/[0.06] border border-red-500/15 text-red-400/80"
                             : t.chat.assistantBubble
-                      }`}
+                        }`}
                     >
                       {msg.error ? (
                         <div className="flex items-start gap-2">
@@ -1049,20 +1029,19 @@ function AIChatInner() {
                           </span>
                           <button
                             onClick={() =>
-                              handleCopy((msg.codeBlock as any).code, `${msg.id  }-code`)
+                              handleCopy((msg.codeBlock as any).code, `${msg.id}-code`)
                             }
-                            className={`flex items-center gap-1 px-2 py-0.5 rounded text-[0.6rem] transition-all ${
-                              copiedId === `${msg.id  }-code`
+                            className={`flex items-center gap-1 px-2 py-0.5 rounded text-[0.6rem] transition-all ${copiedId === `${msg.id}-code`
                                 ? "text-emerald-400"
                                 : `${t.text.muted} ${t.interactive.ghostBtnHover}`
-                            }`}
+                              }`}
                           >
-                            {copiedId === `${msg.id  }-code` ? (
+                            {copiedId === `${msg.id}-code` ? (
                               <Check className="w-3 h-3" />
                             ) : (
                               <Copy className="w-3 h-3" />
                             )}
-                            {copiedId === `${msg.id  }-code` ? "已复制" : "复制"}
+                            {copiedId === `${msg.id}-code` ? "已复制" : "复制"}
                           </button>
                         </div>
                         <pre
@@ -1081,11 +1060,10 @@ function AIChatInner() {
                         <div className="flex items-center gap-1 mt-1.5">
                           <button
                             onClick={() => handleCopy(msg.content, msg.id)}
-                            className={`flex items-center gap-1 px-2 py-0.5 rounded text-[0.6rem] transition-all ${
-                              copiedId === msg.id
+                            className={`flex items-center gap-1 px-2 py-0.5 rounded text-[0.6rem] transition-all ${copiedId === msg.id
                                 ? "text-emerald-400"
                                 : `${t.text.dim} ${t.interactive.ghostBtnHover}`
-                            }`}
+                              }`}
                           >
                             {copiedId === msg.id ? (
                               <Check className="w-3 h-3" />
@@ -1134,9 +1112,9 @@ function AIChatInner() {
               </div>
             )}
 
-            {/* Input box */}
+            {/* Input box — 加大 */}
             <div
-              className={`flex items-end gap-2 rounded-2xl border transition-all px-4 py-2.5 ${t.chat.inputWrapperBg}`}
+              className={`flex items-end gap-2 rounded-2xl border transition-all px-5 py-3 ${t.chat.inputWrapperBg}`}
             >
               <textarea
                 ref={inputRef}
@@ -1144,8 +1122,8 @@ function AIChatInner() {
                 onChange={(e) => setChatInput(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="输入你的问题... (Shift+Enter 换行)"
-                rows={1}
-                className={`flex-1 bg-transparent outline-none resize-none text-[0.85rem] min-h-[24px] max-h-[120px] ${t.chat.inputText}`}
+                rows={2}
+                className={`flex-1 bg-transparent outline-none resize-none text-[0.95rem] min-h-[32px] max-h-[180px] ${t.chat.inputText}`}
                 style={{ lineHeight: "1.5" }}
               />
 

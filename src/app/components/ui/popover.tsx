@@ -8,21 +8,9 @@
  * @status: stable
  * @license: MIT
  * @copyright: Copyright (c) 2026 YanYuCloudCube Team
- * @tags: component,react,ui,ui
+ * @tags: ui,popover,radix-ui
  */
 
-/**
- * file: ui/popover.tsx
- * description: 弹出框组件 - 基于 Radix UI Popover，支持触发器、内容、对齐、偏移
- * author: YanYuCloudCube Team <admin@0379.email>
- * version: v1.0.0
- * created: 2026-03-19
- * updated: 2026-03-19
- * status: stable
- * license: MIT
- * copyright: Copyright (c) 2026 YanYuCloudCube Team
- * tags: ui,popover,radix-ui,overlay
- */
 
 "use client";
 

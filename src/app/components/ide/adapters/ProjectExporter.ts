@@ -161,7 +161,7 @@ export async function exportAsZip(
   });
 
   const fileName = `${options.projectName.replace(/\s+/g, "-").toLowerCase()}-${formatDate()}.zip`;
-  saveAs(blob, fileName);
+  saveAs(blob as Blob, fileName);
 }
 
 // ── JSON 导出 ──

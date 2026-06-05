@@ -115,6 +115,12 @@ export default defineConfig({
           });
         },
       },
+      // Ollama 本地代理 — 绕过 CORS 限制
+      '/api/ollama': {
+        target: 'http://localhost:11434',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/ollama/, ''),
+      },
     },
   },
   optimizeDeps: {

@@ -12,31 +12,32 @@
  * @tags: files,file-tree,editor,tabs,monaco
  */
 
-import { useState, useCallback, lazy, Suspense, useRef, useEffect } from "react";
 import {
-  ChevronRight,
+  Check,
   ChevronDown,
+  ChevronRight,
   FileCode2,
   FileJson,
+  FilePlus,
   FileText,
   Folder,
   FolderOpen,
-  Search,
-  X,
-  FilePlus,
   FolderPlus,
-  RefreshCw,
-  Trash2,
   Pencil,
-  Check,
+  RefreshCw,
+  Search,
+  Trash2,
+  X,
 } from "lucide-react";
-import { type FileNode } from "./fileData";
-import { PanelHeader } from "./PanelManager";
+import { Suspense, lazy, useCallback, useEffect, useRef, useState } from "react";
 import { useFileStore } from "./FileStore";
-import { useWorkflowEventBus } from "./WorkflowEventBus";
-const MonacoWrapper = lazy(() => import("./MonacoWrapper"));
+import { PanelHeader } from "./PanelManager";
 import TabBar from "./TabBar";
 import VirtualFileTree from "./VirtualFileTree";
+import { useWorkflowEventBus } from "./WorkflowEventBus";
+import { type FileNode } from "./fileData";
+import { toastSuccess } from "./stores/useToastStore";
+const MonacoWrapper = lazy(() => import("./MonacoWrapper"));
 
 interface CenterPanelProps {
   searchOpen: boolean;
@@ -148,6 +149,8 @@ export default function CenterPanel({ searchOpen, nodeId }: CenterPanelProps) {
     setNewFileName("");
     // Auto expand parent
     setExpandedFolders((prev) => new Set([...prev, newFileDialog.parentPath]));
+    const displayName = newFileDialog.type === "file" ? newFileName.trim() : `[文件夹] ${newFileName.trim()}`;
+    toastSuccess(`已创建: ${displayName}`);
   };
 
   const handleRename = () => {
@@ -162,6 +165,7 @@ export default function CenterPanel({ searchOpen, nodeId }: CenterPanelProps) {
       type: "file-saved",
       detail: `重命名: ${oldName} → ${renameDialog.name.trim()}`,
     });
+    toastSuccess(`已重命名: ${oldName} → ${renameDialog.name.trim()}`);
   };
 
   const handleDelete = () => {
@@ -170,6 +174,7 @@ export default function CenterPanel({ searchOpen, nodeId }: CenterPanelProps) {
     deleteFile(deleteDialog);
     setDeleteDialog(null);
     emit({ type: "file-deleted", detail: `删除: ${fileName}` });
+    toastSuccess(`已删除: ${fileName}`);
   };
 
   const handleContextMenu = (e: React.MouseEvent, node: FileNode) => {
@@ -236,11 +241,10 @@ export default function CenterPanel({ searchOpen, nodeId }: CenterPanelProps) {
           key={node.path}
           onClick={() => setActiveFile(node.path)}
           onContextMenu={(e) => handleContextMenu(e, node)}
-          className={`w-full flex items-center gap-1.5 py-1 px-2 rounded-sm transition-colors ${
-            isActive
-              ? "bg-sky-900/30 text-sky-300"
-              : "hover:bg-white/3 text-slate-400"
-          }`}
+          className={`w-full flex items-center gap-1.5 py-1 px-2 rounded-sm transition-colors ${isActive
+            ? "bg-sky-900/30 text-sky-300"
+            : "hover:bg-white/3 text-slate-400"
+            }`}
           style={{ paddingLeft: `${depth * 12 + 24}px` }}
         >
           {getFileIcon(node.name)}

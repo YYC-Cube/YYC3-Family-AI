@@ -12,59 +12,57 @@
  * @tags: homepage,brand,chat,projects,routing
  */
 
-import React, {
-  useState,
-  useEffect,
-  useRef,
-  useCallback,
-  useMemo,
-} from "react";
-import { useNavigate } from "react-router";
-import { motion, AnimatePresence } from "motion/react";
 import {
-  Upload,
+  ArrowRight,
+  Bell,
+  BookOpen,
+  Bot,
+  ChevronRight,
+  Clipboard,
+  Code2,
+  ExternalLink,
   FolderOpen,
   GitFork,
-  PenTool,
-  Code2,
-  Clipboard,
   Home,
-  Terminal,
-  MessageSquare,
-  LayoutGrid,
-  BookOpen,
-  Bell,
-  Settings,
-  User,
-  Sparkles,
-  Zap,
-  Bot,
-  Clock,
-  ArrowRight,
+  Image as ImageIcon,
+  Info,
   Layers,
-  ExternalLink,
+  LayoutGrid,
+  Lightbulb,
+  Loader2,
+  MessageSquare,
+  PenTool,
   Pencil,
-  Trash2,
   Plus,
   Send,
-  Info,
-  ChevronRight,
+  Settings,
+  Sparkles,
+  Terminal,
+  Trash2,
+  Upload,
+  User,
   X,
-  Lightbulb,
-  Image as ImageIcon,
-  Loader2,
+  Zap
 } from "lucide-react";
-import { useThemeTokens } from "./ide/hooks/useThemeTokens";
-import ThemeSwitcher from "./ide/ThemeSwitcher";
-import NotificationDrawer from "./ide/NotificationDrawer";
-import ShareDialog from "./ide/ShareDialog";
+import { AnimatePresence, motion } from "motion/react";
+import React, {
+  useCallback,
+  useEffect,
+  useRef,
+  useState
+} from "react";
+import { useNavigate } from "react-router";
+import { APP_TEMPLATES } from "./AppTemplates";
 import ProjectCreateWizard from "./ProjectCreateWizard";
-import { analyzeIntentAI } from "./ide/LLMService";
-import { getActiveTheme } from "./ide/CustomThemeStore";
 import TemplatePreviewModal, {
   type TemplateWithPreview,
 } from "./TemplatePreviewModal";
-import { APP_TEMPLATES } from "./AppTemplates";
+import { getActiveTheme } from "./ide/CustomThemeStore";
+import { analyzeIntentAI } from "./ide/LLMService";
+import NotificationDrawer from "./ide/NotificationDrawer";
+import ShareDialog from "./ide/ShareDialog";
+import ThemeSwitcher from "./ide/ThemeSwitcher";
+import { useThemeTokens } from "./ide/hooks/useThemeTokens";
 import yyc3Logo from "/macOS/512.png";
 
 // ===================================================================
@@ -88,136 +86,136 @@ const DESIGNER_PATTERNS: {
   weight: number;
   category: string;
 }[] = [
-  // 直接创建/构建意图 (高权重)
-  {
-    pattern:
-      /^(帮我|请|我想|我要|给我|帮忙|能不能|可以)(做|创建|构建|搭建|开发|生成|设计|写|弄|整)(一个|个|一套|一组)?/i,
-    weight: 5,
-    category: "创建请求",
-  },
-  {
-    pattern: /^(make|build|create|design|develop|generate|write)\b/i,
-    weight: 5,
-    category: "创建请求",
-  },
-  {
-    pattern:
-      /(做|搭|建|开发|生成|设计)(一个|一套|一组)(.{2,20})(页面|系统|应用|网站|平台|工具|界面|组件)/i,
-    weight: 4,
-    category: "创建请求",
-  },
+    // 直接创建/构建意图 (高权重)
+    {
+      pattern:
+        /^(帮我|请|我想|我要|给我|帮忙|能不能|可以)(做|创建|构建|搭建|开发|生成|设计|写|弄|整)(一个|个|一套|一组)?/i,
+      weight: 5,
+      category: "创建请求",
+    },
+    {
+      pattern: /^(make|build|create|design|develop|generate|write)\b/i,
+      weight: 5,
+      category: "创建请求",
+    },
+    {
+      pattern:
+        /(做|搭|建|开发|生成|设计)(一个|一套|一组)(.{2,20})(页面|系统|应用|网站|平台|工具|界面|组件)/i,
+      weight: 4,
+      category: "创建请求",
+    },
 
-  // 项目/产品描述 (中高权重)
-  {
-    pattern: /(网站|网页|app|应用|小程序|h5|官网|主页|首页|landing\s*page)/i,
-    weight: 3,
-    category: "产品类型",
-  },
-  {
-    pattern: /(仪表板|dashboard|后|管理系统|admin|cms|crm|erp|oa|saas)/i,
-    weight: 3,
-    category: "产品类型",
-  },
-  {
-    pattern: /(电商|商城|网店|购物|支付|订单|商品|库存|物流)/i,
-    weight: 3,
-    category: "商业场景",
-  },
-  {
-    pattern: /(博客|论坛|社交|聊天|社区|评论|发帖|朋友圈|feed)/i,
-    weight: 3,
-    category: "社交场景",
-  },
-  {
-    pattern: /(日程|日历|待办|todo|任务|项目管理|看板|甘特|kanban)/i,
-    weight: 3,
-    category: "效率工具",
-  },
-  {
-    pattern: /(表单|问卷|调查|投票|报名|预约|登记|签到)/i,
-    weight: 3,
-    category: "表单场景",
-  },
-  {
-    pattern: /(数据|图表|报表|统计|分析|可视化|监控|大屏)/i,
-    weight: 3,
-    category: "数据场景",
-  },
-  {
-    pattern: /(简历|portfolio|作品集|个人主页|个人网站|名片)/i,
-    weight: 3,
-    category: "个人展示",
-  },
+    // 项目/产品描述 (中高权重)
+    {
+      pattern: /(网站|网页|app|应用|小程序|h5|官网|主页|首页|landing\s*page)/i,
+      weight: 3,
+      category: "产品类型",
+    },
+    {
+      pattern: /(仪表板|dashboard|后|管理系统|admin|cms|crm|erp|oa|saas)/i,
+      weight: 3,
+      category: "产品类型",
+    },
+    {
+      pattern: /(电商|商城|网店|购物|支付|订单|商品|库存|物流)/i,
+      weight: 3,
+      category: "商业场景",
+    },
+    {
+      pattern: /(博客|论坛|社交|聊天|社区|评论|发帖|朋友圈|feed)/i,
+      weight: 3,
+      category: "社交场景",
+    },
+    {
+      pattern: /(日程|日历|待办|todo|任务|项目管理|看板|甘特|kanban)/i,
+      weight: 3,
+      category: "效率工具",
+    },
+    {
+      pattern: /(表单|问卷|调查|投票|报名|预约|登记|签到)/i,
+      weight: 3,
+      category: "表单场景",
+    },
+    {
+      pattern: /(数据|图表|报表|统计|分析|可视化|监控|大屏)/i,
+      weight: 3,
+      category: "数据场景",
+    },
+    {
+      pattern: /(简历|portfolio|作品集|个人主页|个人网站|名片)/i,
+      weight: 3,
+      category: "个人展示",
+    },
 
-  // 非技术自然语言 — 日常需求 (中权重)
-  {
-    pattern: /(想卖|要卖|开店|开网店|做生意|卖东西|买东西)/i,
-    weight: 3,
-    category: "商业需求",
-  },
-  {
-    pattern: /(展示|宣传|推广|介绍|呈现)(我的|公司|团队|产品|服务|作品)/i,
-    weight: 3,
-    category: "展示需求",
-  },
-  {
-    pattern: /(管理|记录|跟踪|追踪)(客户|员工|学生|会员|订单|库存|进度|项目)/i,
-    weight: 3,
-    category: "管理需求",
-  },
-  {
-    pattern: /(收集|采集|录入)(信息|数据|反馈|意见|报名)/i,
-    weight: 3,
-    category: "采集需求",
-  },
-  {
-    pattern: /(预约|排班|排课|排期|安排|计划|规划)/i,
-    weight: 2,
-    category: "日程需求",
-  },
-  {
-    pattern: /(好看的|漂亮的|酷炫的|简约的|现代的|专业的|科技感)/i,
-    weight: 2,
-    category: "风格描述",
-  },
+    // 非技术自然语言 — 日常需求 (中权重)
+    {
+      pattern: /(想卖|要卖|开店|开网店|做生意|卖东西|买东西)/i,
+      weight: 3,
+      category: "商业需求",
+    },
+    {
+      pattern: /(展示|宣传|推广|介绍|呈现)(我的|公司|团队|产品|服务|作品)/i,
+      weight: 3,
+      category: "展示需求",
+    },
+    {
+      pattern: /(管理|记录|跟踪|追踪)(客户|员工|学生|会员|订单|库存|进度|项目)/i,
+      weight: 3,
+      category: "管理需求",
+    },
+    {
+      pattern: /(收集|采集|录入)(信息|数据|反馈|意见|报名)/i,
+      weight: 3,
+      category: "采集需求",
+    },
+    {
+      pattern: /(预约|排班|排课|排期|安排|计划|规划)/i,
+      weight: 2,
+      category: "日程需求",
+    },
+    {
+      pattern: /(好看的|漂亮的|酷炫的|简约的|现代的|专业的|科技感)/i,
+      weight: 2,
+      category: "风格描述",
+    },
 
-  // 技术关键词 (中权重)
-  {
-    pattern: /(react|vue|angular|next|nuxt|html|css|tailwind|typescript)/i,
-    weight: 2,
-    category: "技术栈",
-  },
-  {
-    pattern: /(组件|模块|布局|导航|菜单|侧边栏|header|footer|navbar)/i,
-    weight: 2,
-    category: "UI组件",
-  },
-  {
-    pattern: /(按钮|输入框|下拉|弹窗|对话框|提示|卡片|列表|表格|分页)/i,
-    weight: 2,
-    category: "UI元素",
-  },
-  {
-    pattern: /(api|接口|数据库|后端|前端|全栈|crud|增删改查|restful|graphql)/i,
-    weight: 2,
-    category: "技术实现",
-  },
-  {
-    pattern: /(登录|注册|用户|权限|认证|身份|密码|oauth|token)/i,
-    weight: 2,
-    category: "用户系统",
-  },
-  {
-    pattern: /(响应式|自适应|移动端|手机|ipad|桌面端|多设备)/i,
-    weight: 2,
-    category: "适配需求",
-  },
-  {
-    pattern: /(深色模式|暗色|亮色|主题|换肤|dark\s*mode)/i,
-    weight: 1,
-    category: "主题需求",
-  },
-];
+    // 技术关键词 (中权重)
+    {
+      pattern: /(react|vue|angular|next|nuxt|html|css|tailwind|typescript)/i,
+      weight: 2,
+      category: "技术栈",
+    },
+    {
+      pattern: /(组件|模块|布局|导航|菜单|侧边栏|header|footer|navbar)/i,
+      weight: 2,
+      category: "UI组件",
+    },
+    {
+      pattern: /(按钮|输入框|下拉|弹窗|对话框|提示|卡片|列表|表格|分页)/i,
+      weight: 2,
+      category: "UI元素",
+    },
+    {
+      pattern: /(api|接口|数据库|后端|前端|全栈|crud|增删改查|restful|graphql)/i,
+      weight: 2,
+      category: "技术实现",
+    },
+    {
+      pattern: /(登录|注册|用户|权限|认证|身份|密码|oauth|token)/i,
+      weight: 2,
+      category: "用户系统",
+    },
+    {
+      pattern: /(响应式|自适应|移动端|手机|ipad|桌面端|多设备)/i,
+      weight: 2,
+      category: "适配需求",
+    },
+    {
+      pattern: /(深色模式|暗色|亮色|主题|换肤|dark\s*mode)/i,
+      weight: 1,
+      category: "主题需求",
+    },
+  ];
 
 // ── AI工作台/问答类关键词 (weighted) ──
 const AI_PATTERNS: { pattern: RegExp; weight: number; category: string }[] = [
@@ -320,51 +318,51 @@ const SENTENCE_PATTERNS: {
   weight: number;
   label: string;
 }[] = [
-  // "我想要一个 xxx" → 创建
-  {
-    pattern: /我想(要|有|拥有|得到)(一个|一套|一组)?(.{2,30})/i,
-    bias: "designer",
-    weight: 3,
-    label: "创建意愿",
-  },
-  // "帮我做/弄/整 xxx" → 创建
-  {
-    pattern: /(帮我|替我|给我)(做|弄|整|搞|搭)(一个|个)?(.{2,30})/i,
-    bias: "designer",
-    weight: 4,
-    label: "创建请求",
-  },
-  // "xxx 怎么做/实现/写" → AI对话
-  {
-    pattern: /(.{2,20})(怎么|如何)(做|实现|写|用|配置|部署|安装)/i,
-    bias: "ai-workspace",
-    weight: 3,
-    label: "方法咨询",
-  },
-  // "xxx 是什么 / 什么是 xxx" → AI对话
-  {
-    pattern: /(什么是|(.{2,15})是什么)/i,
-    bias: "ai-workspace",
-    weight: 3,
-    label: "概念查询",
-  },
-  // 包含代码块 → AI对话
-  {
-    pattern: /```[\s\S]*```/i,
-    bias: "ai-workspace",
-    weight: 4,
-    label: "代码片段",
-  },
-  // "类似xxx的" / "像xxx一样" → 创建
-  {
-    pattern: /(类似|像|仿照|参考|模仿)(.{2,20})(一样|那|那种|的)/i,
-    bias: "designer",
-    weight: 3,
-    label: "参考创建",
-  },
-  // 纯表情/非常短 → AI 工作台
-  { pattern: /^.{0,3}$/i, bias: "ai-workspace", weight: 1, label: "短输入" },
-];
+    // "我想要一个 xxx" → 创建
+    {
+      pattern: /我想(要|有|拥有|得到)(一个|一套|一组)?(.{2,30})/i,
+      bias: "designer",
+      weight: 3,
+      label: "创建意愿",
+    },
+    // "帮我做/弄/整 xxx" → 创建
+    {
+      pattern: /(帮我|替我|给我)(做|弄|整|搞|搭)(一个|个)?(.{2,30})/i,
+      bias: "designer",
+      weight: 4,
+      label: "创建请求",
+    },
+    // "xxx 怎么做/实现/写" → AI对话
+    {
+      pattern: /(.{2,20})(怎么|如何)(做|实现|写|用|配置|部署|安装)/i,
+      bias: "ai-workspace",
+      weight: 3,
+      label: "方法咨询",
+    },
+    // "xxx 是什么 / 什么是 xxx" → AI对话
+    {
+      pattern: /(什么是|(.{2,15})是什么)/i,
+      bias: "ai-workspace",
+      weight: 3,
+      label: "概念查询",
+    },
+    // 包含代码块 → AI对话
+    {
+      pattern: /```[\s\S]*```/i,
+      bias: "ai-workspace",
+      weight: 4,
+      label: "代码片段",
+    },
+    // "类似xxx的" / "像xxx一样" → 创建
+    {
+      pattern: /(类似|像|仿照|参考|模仿)(.{2,20})(一样|那|那种|的)/i,
+      bias: "designer",
+      weight: 3,
+      label: "参考创建",
+    },
+    // 纯表情/非常短 → AI 工作台
+    { pattern: /^.{0,3}$/i, bias: "ai-workspace", weight: 1, label: "短输入" },
+  ];
 
 function analyzeIntent(input: string): IntentResult {
   const text = input.trim();
@@ -671,9 +669,8 @@ function IntentToast({
         {/* Header */}
         <div className="flex items-center gap-2 mb-2">
           <div
-            className={`w-7 h-7 rounded-lg flex items-center justify-center ${
-              isDesigner ? t.intentToast.designerIconBg : t.intentToast.aiIconBg
-            }`}
+            className={`w-7 h-7 rounded-lg flex items-center justify-center ${isDesigner ? t.intentToast.designerIconBg : t.intentToast.aiIconBg
+              }`}
           >
             {isDesigner ? (
               <Terminal
@@ -705,11 +702,10 @@ function IntentToast({
               initial={{ width: 0 }}
               animate={{ width: `${confidencePct}%` }}
               transition={{ duration: 0.6, ease: "easeOut" }}
-              className={`h-full rounded-full ${
-                isDesigner
-                  ? t.intentToast.designerProgressGradient
-                  : t.intentToast.aiProgressGradient
-              }`}
+              className={`h-full rounded-full ${isDesigner
+                ? t.intentToast.designerProgressGradient
+                : t.intentToast.aiProgressGradient
+                }`}
             />
           </div>
           <span
@@ -832,7 +828,7 @@ export default function HomePage() {
         window.open("https://www.figma.com/", "_blank");
         break;
       case "code-snippet":
-        setChatInput(prev => `${prev  }\n\`\`\`typescript\n// 在此粘贴代码\n\`\`\`\n`);
+        setChatInput(prev => `${prev}\n\`\`\`typescript\n// 在此粘贴代码\n\`\`\`\n`);
         setShowActions(false);
         break;
       case "clipboard":
@@ -1027,9 +1023,8 @@ export default function HomePage() {
                 <div key={item.id} className="relative group">
                   <button
                     onClick={() => handleNavClick(item)}
-                    className={`relative w-9 h-9 rounded-lg flex items-center justify-center transition-all ${
-                      isActive ? t.page.navActive : t.page.navInactive
-                    }`}
+                    className={`relative w-9 h-9 rounded-lg flex items-center justify-center transition-all ${isActive ? t.page.navActive : t.page.navInactive
+                      }`}
                   >
                     <item.icon
                       className={`w-4 h-4 ${isActive && item.color ? item.color : ""}`}
@@ -1096,7 +1091,7 @@ export default function HomePage() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-10"
+            className="text-center mb-6"
           >
             <div className="flex items-center justify-center gap-3 mb-3">
               <div className="w-14 h-14 rounded-2xl flex items-center justify-center overflow-hidden">
@@ -1190,7 +1185,7 @@ export default function HomePage() {
                     onChange={(e) => {
                       if (e.target.files && e.target.files.length > 0) {
                         Array.from(e.target.files).forEach(file => {
-                          setChatInput(prev => `${prev  }[图片: ${file.name}] `);
+                          setChatInput(prev => `${prev}[图片: ${file.name}] `);
                         });
                       }
                     }}
@@ -1203,7 +1198,7 @@ export default function HomePage() {
                     onChange={(e) => {
                       if (e.target.files && e.target.files.length > 0) {
                         Array.from(e.target.files).forEach(file => {
-                          setChatInput(prev => `${prev  }[文件: ${file.name}] `);
+                          setChatInput(prev => `${prev}[文件: ${file.name}] `);
                         });
                       }
                     }}
@@ -1212,7 +1207,7 @@ export default function HomePage() {
               )}
 
               {/* Input area */}
-              <div className="flex items-end gap-2 p-3">
+              <div className="flex items-end gap-2 p-4">
                 <button
                   onClick={(e) => {
                     e.preventDefault();
@@ -1234,14 +1229,14 @@ export default function HomePage() {
                       }
                     }}
                     placeholder="描述你想创建的应用，或问我任何问题..."
-                    className={`w-full resize-none bg-transparent border-0 outline-none text-[0.9rem] py-2 px-1 max-h-32 min-h-[36px] ${t.home.textareaText}`}
-                    rows={1}
+                    className={`w-full resize-none bg-transparent border-0 outline-none text-[0.95rem] py-3 px-1 max-h-48 min-h-[52px] ${t.home.textareaText}`}
+                    rows={2}
                   />
                 </div>
                 <button
                   onClick={handleSubmit}
                   disabled={!chatInput.trim() || isClassifying}
-                  className={`flex-shrink-0 w-9 h-9 rounded-lg flex items-center justify-center transition-all disabled:opacity-40 ${t.home.submitBtn}`}
+                  className={`flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center transition-all disabled:opacity-40 ${t.home.submitBtn}`}
                 >
                   {isClassifying ? (
                     <Sparkles className="w-4 h-4 text-white animate-pulse" />
@@ -1269,11 +1264,10 @@ export default function HomePage() {
                     </span>
                     <div className="flex-1" />
                     <span
-                      className={`text-[0.6rem] px-1.5 py-0.5 rounded-full ${
-                        liveIntent.mode === "designer"
-                          ? t.home.designerBadge
-                          : t.home.aiBadge
-                      }`}
+                      className={`text-[0.6rem] px-1.5 py-0.5 rounded-full ${liveIntent.mode === "designer"
+                        ? t.home.designerBadge
+                        : t.home.aiBadge
+                        }`}
                     >
                       {liveIntent.mode === "designer" ? "编程模式" : "对话模式"}
                     </span>
@@ -1343,7 +1337,7 @@ export default function HomePage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.35 }}
-            className="w-full max-w-3xl mt-10"
+            className="w-full max-w-3xl mt-16"
           >
             <div className="flex items-center justify-between mb-4 px-1">
               <div className="flex items-center gap-2">
@@ -1361,129 +1355,89 @@ export default function HomePage() {
               </button>
             </div>
 
+            {/* 合并：模版 + 最近项目 → 一排 */}
             <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin snap-x snap-mandatory">
               {APP_TEMPLATES.slice(0, 6).map((tpl, i) => (
                 <motion.div
                   key={tpl.id}
-                  whileHover={{ y: -4, scale: 1.02 }}
+                  whileHover={{ y: -3 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => setSelectedTemplate(tpl)}
-                  className={`flex-shrink-0 w-44 rounded-xl overflow-hidden cursor-pointer group home-project-card ${t.page.cardBgAlt} border ${t.page.cardBorder} snap-start`}
+                  className={`flex-shrink-0 w-36 rounded-xl overflow-hidden cursor-pointer group home-project-card ${t.page.cardBgAlt} border ${t.page.cardBorder} snap-start`}
                 >
                   <div
-                    className={`h-20 bg-gradient-to-br ${tpl.gradient} flex items-center justify-center relative`}
+                    className={`h-14 bg-gradient-to-br ${tpl.gradient} flex items-center justify-center relative`}
                   >
-                    <tpl.icon className="w-7 h-7 text-white/50" />
+                    <tpl.icon className="w-5 h-5 text-white/50" />
                     {tpl.previewCode && (
-                      <span className="absolute top-1.5 right-1.5 text-[0.55rem] px-1 py-px rounded bg-white/20 text-white/90 backdrop-blur-sm font-medium">
+                      <span className="absolute top-1 right-1 text-[0.5rem] px-1 py-px rounded bg-white/20 text-white/90 backdrop-blur-sm font-medium">
                         LIVE
                       </span>
                     )}
                   </div>
-                  <div className="p-3">
-                    <h3
-                      className={`text-[0.75rem] truncate font-medium ${t.text.primary}`}
-                    >
+                  <div className="p-2">
+                    <h3 className={`text-[0.7rem] truncate font-medium ${t.text.primary}`}>
                       {tpl.name}
                     </h3>
-                    <p
-                      className={`text-[0.65rem] truncate mt-0.5 ${t.text.muted}`}
-                    >
-                      {tpl.description.slice(0, 18)}...
-                    </p>
-                    <div className="flex items-center gap-2 mt-2">
+                    <div className="flex items-center gap-1.5 mt-1">
                       {tpl.difficulty && (
-                        <span className={`text-[0.55rem] px-1.5 py-px rounded-full ${
-                          tpl.difficulty === "beginner" ? "bg-emerald-400/15 text-emerald-400" :
+                        <span className={`text-[0.5rem] px-1 py-px rounded-full ${tpl.difficulty === "beginner" ? "bg-emerald-400/15 text-emerald-400" :
                           tpl.difficulty === "intermediate" ? "bg-amber-400/15 text-amber-400" :
-                          "bg-rose-400/15 text-rose-400"
-                        }`}>
+                            "bg-rose-400/15 text-rose-400"
+                          }`}>
                           {tpl.difficulty === "beginner" ? "入门" : tpl.difficulty === "intermediate" ? "中级" : "高级"}
                         </span>
                       )}
-                      <span className={`text-[0.6rem] ${t.text.muted}`}>
-                        ⏱️ {tpl.estimatedTime}
+                      <span className={`text-[0.55rem] ${t.text.muted}`}>
+                        {tpl.estimatedTime}
                       </span>
                     </div>
                   </div>
                 </motion.div>
               ))}
-            </div>
-          </motion.div>
-
-          {/* Recent Projects */}
-          <motion.div
-            id="recent-projects"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="w-full max-w-3xl mt-12"
-          >
-            <div className="flex items-center justify-between mb-4 px-1">
-              <div className="flex items-center gap-2">
-                <Clock className={`w-4 h-4 ${t.text.tertiary}`} />
-                <span className={`text-[0.85rem] ${t.text.tertiary}`}>
-                  最近项目
-                </span>
-              </div>
-              <button
-                onClick={() => navigate("/ide/new")}
-                className={`flex items-center gap-1.5 text-[0.8rem] transition-colors ${t.text.accent}`}
-              >
-                <span>查看全部</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </button>
-            </div>
-
-            <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin">
               {projects.map((project) => (
                 <motion.div
                   key={project.id}
-                  whileHover={{ y: -4 }}
-                  className={`flex-shrink-0 w-52 rounded-xl overflow-hidden cursor-pointer group home-project-card ${t.page.cardBgAlt} border ${t.page.cardBorder}`}
+                  whileHover={{ y: -3 }}
+                  className={`flex-shrink-0 w-36 rounded-xl overflow-hidden cursor-pointer group home-project-card ${t.page.cardBgAlt} border ${t.page.cardBorder} snap-start`}
                   onClick={() => handleProjectClick(project.id)}
-                  onContextMenu={(e) => {
-                    e.preventDefault();
-                    setContextMenu({
-                      id: project.id,
-                      x: e.clientX,
-                      y: e.clientY,
-                    });
-                  }}
                 >
                   <div
-                    className={`h-24 ${project.thumbnail} flex items-center justify-center`}
+                    className={`h-14 ${project.thumbnail} flex items-center justify-center`}
                   >
-                    <Layers className="w-8 h-8 text-white/60" />
+                    <Layers className="w-5 h-5 text-white/60" />
                   </div>
-                  <div className="p-3">
+                  <div className="p-2">
                     <div className="flex items-center justify-between">
-                      <h3
-                        className={`text-[0.82rem] truncate ${t.text.primary}`}
-                      >
+                      <h3 className={`text-[0.7rem] truncate ${t.text.primary}`}>
                         {project.name}
                       </h3>
-                      <span
-                        className={`w-2 h-2 rounded-full flex-shrink-0 ${
-                          project.status === "active"
-                            ? t.status.successBg
-                            : project.status === "draft"
-                              ? t.status.warningBg
-                              : t.status.infoBg
-                        }`}
-                      />
+                      <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${project.status === "active"
+                        ? t.status.successBg
+                        : project.status === "draft"
+                          ? t.status.warningBg
+                          : t.status.infoBg
+                        }`} />
                     </div>
-                    <div className="flex items-center justify-between mt-1.5">
-                      <span className={`text-[0.7rem] ${t.text.muted}`}>
+                    <div className="flex items-center justify-between mt-1">
+                      <span className={`text-[0.6rem] ${t.text.muted}`}>
                         {project.updatedAt}
                       </span>
-                      <span className={`text-[0.7rem] ${t.text.muted}`}>
+                      <span className={`text-[0.6rem] ${t.text.muted}`}>
                         {project.panels} 面板
                       </span>
                     </div>
                   </div>
                 </motion.div>
               ))}
+              {/* 查看全部 */}
+              <button
+                onClick={() => navigate("/templates")}
+                className={`flex-shrink-0 w-36 rounded-xl border border-dashed ${t.page.cardBorder} flex flex-col items-center justify-center gap-1 hover:bg-white/[0.02] transition-all ${t.text.muted}`}
+              >
+                <Plus className="w-5 h-5" />
+                <span className="text-[0.65rem]">查看更多</span>
+              </button>
             </div>
           </motion.div>
         </div>
@@ -1511,11 +1465,10 @@ export default function HomePage() {
                     handleProjectDelete(contextMenu.id);
                   setContextMenu(null);
                 }}
-                className={`w-full flex items-center gap-2 px-3 py-2 text-[0.8rem] transition-colors ${
-                  "danger" in item && item.danger
-                    ? t.home.ctxMenuDanger
-                    : t.home.ctxMenuNormal
-                }`}
+                className={`w-full flex items-center gap-2 px-3 py-2 text-[0.8rem] transition-colors ${"danger" in item && item.danger
+                  ? t.home.ctxMenuDanger
+                  : t.home.ctxMenuNormal
+                  }`}
               >
                 <item.icon className="w-3.5 h-3.5" />
                 {item.label}

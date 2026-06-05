@@ -8,21 +8,9 @@
  * @status: stable
  * @license: MIT
  * @copyright: Copyright (c) 2026 YanYuCloudCube Team
- * @tags: component,react,ui,ui
+ * @tags: ui,separator,radix-ui
  */
 
-/**
- * file: ui/separator.tsx
- * description: 分隔符组件 - 基于 Radix UI Separator，支持水平/垂直方向
- * author: YanYuCloudCube Team <admin@0379.email>
- * version: v1.0.0
- * created: 2026-03-19
- * updated: 2026-03-19
- * status: stable
- * license: MIT
- * copyright: Copyright (c) 2026 YanYuCloudCube Team
- * tags: ui,separator,radix-ui,divider
- */
 
 "use client";
 

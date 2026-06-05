@@ -8,21 +8,9 @@
  * @status: stable
  * @license: MIT
  * @copyright: Copyright (c) 2026 YanYuCloudCube Team
- * @tags: component,react,ui,ui
+ * @tags: ui,checkbox,radix-ui,form
  */
 
-/**
- * file: ui/checkbox.tsx
- * description: 复选框组件 - 基于 Radix UI Checkbox，支持选中状态、禁用状态、不确定状态
- * author: YanYuCloudCube Team <admin@0379.email>
- * version: v1.0.0
- * created: 2026-03-19
- * updated: 2026-03-19
- * status: stable
- * license: MIT
- * copyright: Copyright (c) 2026 YanYuCloudCube Team
- * tags: ui,checkbox,radix-ui,form
- */
 
 "use client";
 

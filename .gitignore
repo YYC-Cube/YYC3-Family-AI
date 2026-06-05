@@ -70,3 +70,12 @@ docs-archive/
 _*.cjs
 _*.js
 *.temp
+
+# Rust / Tauri build outputs
+src-tauri/target/
+
+# Reports
+reports/
+
+# Temporary CI/CD
+local-ci-report-*

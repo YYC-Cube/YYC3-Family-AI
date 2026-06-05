@@ -8,21 +8,9 @@
  * @status: stable
  * @license: MIT
  * @copyright: Copyright (c) 2026 YanYuCloudCube Team
- * @tags: component,react,ui,ui
+ * @tags: ui,avatar,radix-ui
  */
 
-/**
- * file: ui/avatar.tsx
- * description: 头像组件 - 基于 Radix UI Avatar，支持图片、回退、加载状态
- * author: YanYuCloudCube Team <admin@0379.email>
- * version: v1.0.0
- * created: 2026-03-19
- * updated: 2026-03-19
- * status: stable
- * license: MIT
- * copyright: Copyright (c) 2026 YanYuCloudCube Team
- * tags: ui,avatar,radix-ui,image
- */
 
 "use client";
 

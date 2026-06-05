@@ -14,8 +14,17 @@
 
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
+import { getDB, type StoredFile } from "../adapters/IndexedDBAdapter";
 import { FILE_CONTENTS, type FileNode } from "../fileData";
 import { logger } from "../services/Logger";
+
+// ===== Constants =====
+
+/** 大文件阈值 - 超过此大小的文件内容将从 IndexedDB 惰性加载而不是全量保持在内存中 */
+const LARGE_FILE_THRESHOLD = 500 * 1024; // 500KB
+
+/** 大文件占位符前缀，用于标记需要 IDB 惰性加载的文件 */
+const LAZY_LOAD_PLACEHOLDER = "__LAZY_LOAD__:";
 
 // ===== Types =====
 export interface OpenTab {
@@ -90,6 +99,42 @@ interface FileStoreActions {
 }
 
 // ===== Helpers =====
+
+/**
+ * 判断文件是否为惰性加载的大文件占位符
+ */
+function isLazyLoadPlaceholder(content: string): boolean {
+  return content.startsWith(LAZY_LOAD_PLACEHOLDER);
+}
+
+/**
+ * 从 IndexedDB 获取大文件实际内容
+ */
+async function loadLargeFileContent(path: string): Promise<string | null> {
+  try {
+    const db = await getDB();
+    const file = await db.get("files", path);
+    return (file as StoredFile | undefined)?.content ?? null;
+  } catch (err) {
+    logger.warn(`[lazy-load] Failed to load ${path} from IndexedDB:`, err);
+    return null;
+  }
+}
+
+/**
+ * 判断文件内容是否超过大文件阈值，需要惰性加载
+ */
+function shouldLazyLoad(content: string): boolean {
+  return content.length > LARGE_FILE_THRESHOLD;
+}
+
+/**
+ * 创建惰性加载占位符
+ */
+function createLazyPlaceholder(path: string): string {
+  return `${LAZY_LOAD_PLACEHOLDER}${path}`;
+}
+
 function getLang(name: string): string {
   if (name.endsWith(".tsx")) return "tsx";
   if (name.endsWith(".ts")) return "ts";
@@ -229,6 +274,15 @@ export const useFileStoreZustand = create<FileStoreState & FileStoreActions>()(
 
     updateFileContent: async (path, content) => {
       get().updateFile(path, content);
+      // Persist large content to IndexedDB asynchronously
+      if (shouldLazyLoad(content)) {
+        try {
+          const { saveFile } = await import("../adapters/IndexedDBAdapter");
+          await saveFile("default", path, content);
+        } catch (err) {
+          logger.warn(`[lazy-save] Failed to persist ${path}:`, err);
+        }
+      }
     },
 
     createFile: (path, content = "") =>
@@ -271,11 +325,11 @@ export const useFileStoreZustand = create<FileStoreState & FileStoreActions>()(
     moveFile: (sourcePath, targetPath) => {
       const state = get();
       if (!state.fileContents[sourcePath]) {
-        logger.warn('moveFile: source file not found: ${sourcePath}');
+        logger.warn(`moveFile: source file not found: ${sourcePath}`);
         return false;
       }
       if (state.fileContents[targetPath]) {
-        logger.warn('moveFile: target already exists: ${targetPath}');
+        logger.warn(`moveFile: target already exists: ${targetPath}`);
         return false;
       }
 
@@ -293,18 +347,18 @@ export const useFileStoreZustand = create<FileStoreState & FileStoreActions>()(
         ];
       });
 
-      logger.warn('moveFile: ${sourcePath} -> ${targetPath}');
+      logger.warn(`moveFile: ${sourcePath} -> ${targetPath}`);
       return true;
     },
 
     copyFile: (sourcePath, targetPath) => {
       const state = get();
       if (!state.fileContents[sourcePath]) {
-        logger.warn('copyFile: source file not found: ${sourcePath}');
+        logger.warn(`copyFile: source file not found: ${sourcePath}`);
         return false;
       }
       if (state.fileContents[targetPath]) {
-        logger.warn('copyFile: target already exists: ${targetPath}');
+        logger.warn(`copyFile: target already exists: ${targetPath}`);
         return false;
       }
 
@@ -316,7 +370,7 @@ export const useFileStoreZustand = create<FileStoreState & FileStoreActions>()(
         ];
       });
 
-      logger.warn('copyFile: ${sourcePath} -> ${targetPath}');
+      logger.warn(`copyFile: ${sourcePath} -> ${targetPath}`);
       return true;
     },
 
@@ -327,7 +381,7 @@ export const useFileStoreZustand = create<FileStoreState & FileStoreActions>()(
       );
 
       if (filesToMove.length === 0) {
-        logger.warn('moveFolder: folder not found: ${sourcePath}');
+        logger.warn(`moveFolder: folder not found: ${sourcePath}`);
         return false;
       }
 
@@ -353,14 +407,14 @@ export const useFileStoreZustand = create<FileStoreState & FileStoreActions>()(
         }
       });
 
-      logger.warn('moveFolder: ${sourcePath} -> ${targetPath} (${filesToMove.length} files)');
+      logger.warn(`moveFolder: ${sourcePath} -> ${targetPath} (${filesToMove.length} files)`);
       return true;
     },
 
     duplicateFile: (path) => {
       const state = get();
       if (!state.fileContents[path]) {
-        logger.warn('duplicateFile: file not found: ${path}');
+        logger.warn(`duplicateFile: file not found: ${path}`);
         return null;
       }
 
@@ -383,7 +437,7 @@ export const useFileStoreZustand = create<FileStoreState & FileStoreActions>()(
         ];
       });
 
-      logger.warn('duplicateFile: ${path} -> ${newPath}');
+      logger.warn(`duplicateFile: ${path} -> ${newPath}`);
       return newPath;
     },
 
@@ -488,10 +542,17 @@ export const useFileStoreZustand = create<FileStoreState & FileStoreActions>()(
         state.fileContents[activeFile] = simpleFormat(content, lang);
       }),
 
-    // ── Project initialization ──
+    // ── Project initialization (for template projects) ──
     initializeProject: (files, entryFile) =>
       set((state) => {
-        state.fileContents = files;
+        // Apply lazy loading for large files
+        const optimizedFiles: Record<string, string> = {};
+        for (const [path, content] of Object.entries(files)) {
+          optimizedFiles[path] = shouldLazyLoad(content)
+            ? createLazyPlaceholder(path)
+            : content;
+        }
+        state.fileContents = optimizedFiles;
         state.openTabs = [
           { path: entryFile || "src/app/App.tsx", modified: false },
         ];
@@ -499,6 +560,17 @@ export const useFileStoreZustand = create<FileStoreState & FileStoreActions>()(
         state.gitBranch = "main";
         state.gitChanges = [];
         state.gitLog = INITIAL_GIT_LOG;
+
+        // Async persist large files to IndexedDB
+        for (const [path, content] of Object.entries(files)) {
+          if (shouldLazyLoad(content)) {
+            import("../adapters/IndexedDBAdapter").then(({ saveFile }) => {
+              saveFile("default", path, content).catch((err) =>
+                logger.warn(`[lazy-save] Failed to persist ${path}:`, err),
+              );
+            });
+          }
+        }
       }),
 
     // ── Computed ──
@@ -513,3 +585,6 @@ export const selectActiveFile = (state: FileStoreState) => state.activeFile;
 export const selectGitBranch = (state: FileStoreState) => state.gitBranch;
 export const selectGitChanges = (state: FileStoreState) => state.gitChanges;
 export const selectGitLog = (state: FileStoreState) => state.gitLog;
+
+// ===== Large File Helpers (exported for external hooks) =====
+export { createLazyPlaceholder, isLazyLoadPlaceholder, loadLargeFileContent, shouldLazyLoad };

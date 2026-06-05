@@ -8,21 +8,9 @@
  * @status: stable
  * @license: MIT
  * @copyright: Copyright (c) 2026 YanYuCloudCube Team
- * @tags: component,react,ui,ui
+ * @tags: ui,input,form-element
  */
 
-/**
- * file: ui/input.tsx
- * description: 输入框组件 - 支持多种类型、占位符、焦点状态和禁用状态
- * author: YanYuCloudCube Team <admin@0379.email>
- * version: v1.0.0
- * created: 2026-03-19
- * updated: 2026-03-19
- * status: stable
- * license: MIT
- * copyright: Copyright (c) 2026 YanYuCloudCube Team
- * tags: ui,input,form
- */
 
 import * as React from "react";
 

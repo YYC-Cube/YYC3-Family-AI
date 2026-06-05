@@ -51,6 +51,35 @@ export interface ProviderDef {
  */
 export const BUILTIN_PROVIDERS: ProviderDef[] = [
   {
+    id: "ollama",
+    name: "Ollama (本地)",
+    shortName: "Local",
+    icon: Server,
+    color: "text-amber-400",
+    colorBg: "bg-amber-500/10",
+    colorBorder: "border-amber-500/20",
+    description: "yyc3-merged-v3 · qwen3-coder-30b · 本地推理 · 零上传",
+    baseURL: "http://localhost:11434/api/chat",
+    apiKeyUrl: "",
+    apiKeyPlaceholder: "",
+    openaiCompatible: false,
+    docsUrl: "https://ollama.com",
+    models: [
+      {
+        id: "yyc3-merged-v3:latest",
+        name: "YYC³ Merged-V3",
+        description: "Qwen3-14B DPO · 99.85% 偏好准确率 · 代码专精",
+        contextWindow: "40K",
+      },
+      {
+        id: "qwen3-coder-30b:latest",
+        name: "Qwen3-Coder-30B",
+        description: "代码专用 MoE · 30.5B · Q4_K_M",
+        contextWindow: "128K",
+      },
+    ],
+  },
+  {
     id: "zai-plan",
     name: "Z.ai Coding Plan",
     shortName: "智谱",
@@ -85,24 +114,8 @@ export const BUILTIN_PROVIDERS: ProviderDef[] = [
       },
     ],
   },
-  {
-    id: "ollama",
-    name: "Ollama (本地)",
-    shortName: "Local",
-    icon: Server,
-    color: "text-amber-400",
-    colorBg: "bg-amber-500/10",
-    colorBorder: "border-amber-500/20",
-    description: "本地运行时检测 · 私有数据 · 零预设",
-    baseURL: "http://localhost:11434/api/chat",
-    apiKeyUrl: "",
-    apiKeyPlaceholder: "",
-    openaiCompatible: false,
-    docsUrl: "https://ollama.com",
-    models: [],
-  },
 ];
 
 /** 导出便捷访问器 */
-export const ZAI_PLAN_PROVIDER = BUILTIN_PROVIDERS[0];
-export const OLLAMA_PROVIDER = BUILTIN_PROVIDERS[1];
+export const OLLAMA_PROVIDER = BUILTIN_PROVIDERS[0];
+export const ZAI_PLAN_PROVIDER = BUILTIN_PROVIDERS[1];

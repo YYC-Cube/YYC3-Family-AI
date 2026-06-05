@@ -12,6 +12,7 @@
  */
 
 export * from "./storage-keys";
+export * from "./storage-migration";
 export * from "./providers";
 export * from "./brand";
 export * from "./config";

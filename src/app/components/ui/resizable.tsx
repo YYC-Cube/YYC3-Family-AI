@@ -8,21 +8,9 @@
  * @status: stable
  * @license: MIT
  * @copyright: Copyright (c) 2026 YanYuCloudCube Team
- * @tags: component,react,ui,ui
+ * @tags: ui,resizable,panel
  */
 
-/**
- * file: ui/resizable.tsx
- * description: 可调整大小面板组件 - 基于 react-resizable-panels v4.x，支持面板组、面板、分隔符
- * author: YanYuCloudCube Team <admin@0379.email>
- * version: v1.0.0
- * created: 2026-03-19
- * updated: 2026-04-14
- * status: stable
- * license: MIT
- * copyright: Copyright (c) 2026 YanYuCloudCube Team
- * tags: ui,resizable,panels,layout
- */
 
 "use client";
 

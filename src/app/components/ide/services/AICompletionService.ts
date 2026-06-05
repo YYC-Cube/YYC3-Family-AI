@@ -14,12 +14,11 @@
 
 import type * as monaco from "monaco-editor";
 import {
-  findAvailableProvider,
-  getChatEndpoint,
   buildHeaders,
-  type ProviderConfig,
+  findAvailableProvider,
+  getChatEndpoint
 } from "../LLMService";
-import { logger } from "../services/Logger";
+import { YYC3_CODEGEN_SYSTEM_PROMPT, isYYC3Model } from "../constants/prompts/yyc3-codegen";
 
 interface CompletionCache {
   prefix: string;
@@ -41,6 +40,7 @@ class AICompletionServiceImpl {
   private pendingAbort: AbortController | null = null;
   private debounceTimer: ReturnType<typeof setTimeout> | null = null;
   private enabled = true;
+  private currentModelId: string | null = null;
   private stats = { requests: 0, hits: 0, errors: 0, avgLatency: 0 };
 
   isEnabled(): boolean {
@@ -56,6 +56,11 @@ class AICompletionServiceImpl {
 
   getStats() {
     return { ...this.stats };
+  }
+
+  /** 返回当前使用的模型 ID */
+  getCurrentModel(): string | null {
+    return this.currentModelId;
   }
 
   cancelPending(): void {
@@ -102,6 +107,21 @@ class AICompletionServiceImpl {
     const trimmedPrefix = prefixLines.slice(-MAX_PREFIX_LINES).join("\n");
     const trimmedSuffix = suffixLines.slice(0, MAX_SUFFIX_LINES).join("\n");
 
+    // 使用 YYC³ merged-v3 专用 Prompt（基于测评 100% 零错误验证）
+    if (this.currentModelId && isYYC3Model(this.currentModelId)) {
+      let prompt = YYC3_CODEGEN_SYSTEM_PROMPT + "\n\n";
+
+      if (trimmedSuffix) {
+        prompt += `Code after cursor:\n\`\`\`\n${trimmedSuffix}\n\`\`\`\n\n`;
+      }
+
+      prompt += `Complete the code from <CURSOR>:\n\`\`\`${langLabel}\n${trimmedPrefix}<CURSOR>\n\`\`\`\n\n`;
+      prompt += `Output ONLY the code to insert. No explanations, no markdown, no code fences.`;
+
+      return prompt;
+    }
+
+    // 通用 Prompt（非 YYC³ 模型）
     let prompt = `You are an expert ${langLabel} code completion engine. Continue the code from where the cursor is (marked by <CURSOR>). Output ONLY the code to insert at the cursor position. No explanations, no markdown, no code fences.\n\n`;
 
     if (trimmedSuffix) {
@@ -129,6 +149,13 @@ class AICompletionServiceImpl {
     if (!providerInfo) return null;
 
     const { config, modelId } = providerInfo;
+    this.currentModelId = modelId;
+
+    // YYC³ merged-v3 使用更低 temperature 保证确定性（基于测评验证）
+    const temperature = (modelId && isYYC3Model(modelId)) ? 0.1 : 0.2;
+    const systemPrompt = (modelId && isYYC3Model(modelId))
+      ? YYC3_CODEGEN_SYSTEM_PROMPT
+      : "You are a code completion engine. Output ONLY the code to insert. No explanations.";
 
     return new Promise<string | null>((resolve) => {
       this.debounceTimer = setTimeout(async () => {
@@ -147,10 +174,10 @@ class AICompletionServiceImpl {
           const body: Record<string, unknown> = {
             model: modelId,
             messages: [
-              { role: "system", content: "You are a code completion engine. Output ONLY the code to insert. No explanations." },
+              { role: "system", content: systemPrompt },
               { role: "user", content: prompt },
             ],
-            temperature: 0.2,
+            temperature,
             max_tokens: MAX_COMPLETION_TOKENS,
             stream: false,
           };
@@ -295,7 +322,7 @@ export function registerAIInlineCompletionProvider(
         };
       },
 
-      disposeInlineCompletions: () => {},
+      disposeInlineCompletions: () => { },
     },
   );
 }

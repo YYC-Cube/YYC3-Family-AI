@@ -8,21 +8,9 @@
  * @status: stable
  * @license: MIT
  * @copyright: Copyright (c) 2026 YanYuCloudCube Team
- * @tags: component,react,ui,ui
+ * @tags: ui,card,layout
  */
 
-/**
- * file: ui/card.tsx
- * description: 卡片组件 - 包含 Card、CardHeader、CardTitle、CardDescription、CardContent、CardFooter
- * author: YanYuCloudCube Team <admin@0379.email>
- * version: v1.0.0
- * created: 2026-03-19
- * updated: 2026-03-19
- * status: stable
- * license: MIT
- * copyright: Copyright (c) 2026 YanYuCloudCube Team
- * tags: ui,card,layout
- */
 
 import * as React from "react";
 

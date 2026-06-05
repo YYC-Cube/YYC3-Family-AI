@@ -13,34 +13,34 @@
  * @tags: panels,layout,dnd,split,merge,persistence,swap,replace,pin,lock,float,wave3
  */
 
-import React, {
-  useState,
-  useCallback,
-  useRef,
-  useMemo,
-  createContext,
-  useContext,
-  useEffect,
-} from "react";
-import { useDrag, useDrop } from "react-dnd";
 import {
+  Columns3,
+  ExternalLink,
   GripVertical,
+  Lock,
   Maximize2,
   Minimize2,
+  Pin,
+  RotateCcw,
   SplitSquareHorizontal,
   SplitSquareVertical,
-  X,
-  Columns3,
-  RotateCcw,
-  Pin,
-  Lock,
   Unlock,
-  ExternalLink,
+  X,
 } from "lucide-react";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { useDrag, useDragLayer, useDrop } from "react-dnd";
 import { SK_PANEL_LAYOUT } from "./constants/storage-keys";
-import { usePanelPinStore } from "./stores/usePanelPinStore";
-import { useFloatingPanelStore } from "./stores/useFloatingPanelStore";
 import { errorReporting } from "./services/ErrorReportingService";
+import { useFloatingPanelStore } from "./stores/useFloatingPanelStore";
+import { usePanelPinStore } from "./stores/usePanelPinStore";
 import type { PanelId } from "./types/index";
 
 // Re-export PanelId for backward compatibility
@@ -282,9 +282,8 @@ export function PanelHeader({
 
   return (
     <div
-      className={`flex items-center gap-0 px-1 py-0 border-b border-[var(--ide-border-dim)] bg-[var(--ide-bg-dark)] flex-shrink-0 ${
-        isDragging ? "opacity-40" : ""
-      } ${pinned ? "border-l-2 border-l-[var(--ide-accent-solid)]" : ""}`}
+      className={`flex items-center gap-0 px-1 py-0 border-b border-[var(--ide-border-dim)] bg-[var(--ide-bg-dark)] flex-shrink-0 ${isDragging ? "opacity-40" : ""
+        } ${pinned ? "border-l-2 border-l-[var(--ide-accent-solid)]" : ""}`}
     >
       {/* Drag handle */}
       <div
@@ -460,6 +459,18 @@ export function PanelHeader({
   );
 }
 
+// ===== Drag Monitor Hook =====
+/**
+ * useIsDragging - 检测全局是否有拖拽正在进行中
+ * 用于 DropZone 展示可用放置区域的视觉提示
+ */
+function useIsDragging(): boolean {
+  const { isDragging } = useDragLayer((monitor) => ({
+    isDragging: monitor.isDragging(),
+  }));
+  return isDragging;
+}
+
 // ===== Drop Zone (edges of panels) =====
 interface DropZoneProps {
   nodeId: string;
@@ -468,6 +479,7 @@ interface DropZoneProps {
 
 function DropZone({ nodeId, position }: DropZoneProps) {
   const ctx = usePanelManager();
+  const isDragActive = useIsDragging();
 
   const [{ isOver, canDrop }, drop] = useDrop(
     () => ({
@@ -510,7 +522,10 @@ function DropZone({ nodeId, position }: DropZoneProps) {
     <>
       <div
         ref={drop as any}
-        className={`absolute ${posStyles[position]} z-30`}
+        className={`absolute ${posStyles[position]} z-30 ${isDragActive && canDrop
+            ? "bg-[var(--ide-accent-solid)]/5"
+            : ""
+          }`}
       />
       {isActive && (
         <div
@@ -567,7 +582,7 @@ function SplitContainer({ node, renderPanel }: SplitContainerProps) {
   const childIds = children.map((c) => c.id).join(",");
   useEffect(() => {
     setSizes(children.map((c) => c.size || 100 / children.length));
-  }, [childIds]);  
+  }, [childIds]);
 
   const handleResizeStart = useCallback(
     (index: number, e: React.MouseEvent) => {
@@ -638,15 +653,14 @@ function SplitContainer({ node, renderPanel }: SplitContainerProps) {
                 `${sizes[i] || 100 / children.length}%`,
               [isHorizontal ? "minWidth" : "minHeight"]: "60px",
             }}
-            className={`relative overflow-hidden ${
-              isHorizontal
+            className={`relative overflow-hidden ${isHorizontal
                 ? i < children.length - 1
                   ? "border-r border-dashed border-[var(--ide-border-dim)]"
                   : ""
                 : i < children.length - 1
                   ? "border-b border-dashed border-[var(--ide-border-dim)]"
                   : ""
-            }`}
+              }`}
           >
             <LayoutRenderer node={child} renderPanel={renderPanel} />
           </div>
@@ -654,11 +668,10 @@ function SplitContainer({ node, renderPanel }: SplitContainerProps) {
           {i < children.length - 1 && (
             <div
               onMouseDown={(e) => handleResizeStart(i, e)}
-              className={`flex-shrink-0 z-10 ${
-                isHorizontal
+              className={`flex-shrink-0 z-10 ${isHorizontal
                   ? "w-[3px] cursor-col-resize hover:bg-[var(--ide-accent-solid)]/40"
                   : "h-[3px] cursor-row-resize hover:bg-[var(--ide-accent-solid)]/40"
-              } bg-[var(--ide-border-subtle)] transition-colors`}
+                } bg-[var(--ide-border-subtle)] transition-colors`}
             />
           )}
         </div>

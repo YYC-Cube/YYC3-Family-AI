@@ -754,6 +754,7 @@ export async function analyzeIntentAI(
 /**
  * Find the first available provider that has a configured API key (or is Ollama).
  * Reads from localStorage — usable outside of React context.
+ * Prefers YYC³ merged-v3 when available via Ollama.
  */
 export function findAvailableProvider(): {
   config: ProviderConfig;
@@ -780,8 +781,9 @@ export function findAvailableProvider(): {
     } catch { /* empty */ }
   }
 
-  // Fallback: scan providers in preferred order (zai-plan → ollama)
-  const preferredOrder: ProviderId[] = ["zai-plan", "ollama"];
+  // Fallback: scan providers (local-first — Ollama before cloud)
+  // YYC³ merged-v3 defined as first model in ollama's model list
+  const preferredOrder: ProviderId[] = ["ollama", "zai-plan"];
 
   for (const pid of preferredOrder) {
     const cfg = configs.find((p) => p.id === pid);
@@ -794,7 +796,7 @@ export function findAvailableProvider(): {
       pid === "zai-plan"
         ? "glm-5"
         : pid === "ollama"
-          ? "" // Ollama will detect models dynamically
+          ? cfg.models[0]?.id || "" // 首选 YYC³ merged-v3（providers.ts 中排首位）
           : "";
 
     if (defaultModelId || pid === "ollama") {

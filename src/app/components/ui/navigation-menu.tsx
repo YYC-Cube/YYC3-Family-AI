@@ -8,7 +8,7 @@
  * @status: stable
  * @license: MIT
  * @copyright: Copyright (c) 2026 YanYuCloudCube Team
- * @tags: component,react,ui,ui
+ * @tags: ui,navigation-menu,radix-ui
  */
 
 import * as React from "react";

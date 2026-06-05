@@ -8,21 +8,9 @@
  * @status: stable
  * @license: MIT
  * @copyright: Copyright (c) 2026 YanYuCloudCube Team
- * @tags: component,react,ui,ui
+ * @tags: ui,progress,radix-ui
  */
 
-/**
- * file: ui/progress.tsx
- * description: 进度条组件 - 基于 Radix UI Progress，支持值、不确定状态
- * author: YanYuCloudCube Team <admin@0379.email>
- * version: v1.0.0
- * created: 2026-03-19
- * updated: 2026-03-19
- * status: stable
- * license: MIT
- * copyright: Copyright (c) 2026 YanYuCloudCube Team
- * tags: ui,progress,radix-ui,loading
- */
 
 "use client";
 

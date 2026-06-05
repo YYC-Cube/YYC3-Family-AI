@@ -1,18 +1,17 @@
-// @ts-nocheck
 /**
  * @file: VersioningService.ts
  * @description: 版本管理服务 - 支持文件版本历史、版本对比、版本恢复
  * @author: YanYuCloudCube Team <admin@0379.email>
- * @version: v1.0.0
+ * @version: v1.1.0
  * @created: 2026-03-19
- * @updated: 2026-03-19
- * @status: dev
+ * @updated: 2026-06-04
+ * @status: production
  * @license: MIT
  * @copyright: Copyright (c) 2026 YanYuCloudCube Team
  * @tags: versioning,history,restore,git
  */
 
-import { getDB, type _StoredFile } from "../adapters/IndexedDBAdapter";
+import { getDB } from "../adapters/IndexedDBAdapter";
 import { logger } from "./Logger";
 
 export interface FileVersion {
@@ -50,9 +49,9 @@ export class VersioningService {
   private static instance: VersioningService | null = null;
   private readonly DB_STORE = "file_versions";
   private readonly MAX_VERSIONS = 50; // 默认最大版本数
-  private autoVersionTimers: Map<string, NodeJS.Timeout> = new Map();
+  private autoVersionTimers: Map<string, ReturnType<typeof setInterval>> = new Map();
 
-  private constructor() {}
+  private constructor() { }
 
   static getInstance(): VersioningService {
     if (!VersioningService.instance) {
@@ -93,7 +92,7 @@ export class VersioningService {
 
     // 创建新版本
     const version: FileVersion = {
-      id: `v-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      id: `v-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`,
       path,
       content,
       version: latestVersion + 1,
@@ -109,7 +108,7 @@ export class VersioningService {
     // 清理旧版本
     await this.cleanupOldVersions(path);
 
-    logger.warn('Created version ${version.version} for ${path}');
+    logger.warn(`Created version ${version.version} for ${path}`);
     return version;
   }
 
@@ -137,7 +136,8 @@ export class VersioningService {
       return null;
     }
 
-    return await db.get(this.DB_STORE, versionId);
+    const result = await db.get(this.DB_STORE, versionId);
+    return result ?? null;
   }
 
   /**
@@ -168,7 +168,7 @@ export class VersioningService {
       "System"
     );
 
-    logger.warn('Restored ${version.path} to version ${version.version}');
+    logger.warn(`Restored ${version.path} to version ${version.version}`);
     return true;
   }
 
@@ -238,7 +238,7 @@ export class VersioningService {
     }, intervalMs);
 
     this.autoVersionTimers.set(path, timer);
-    logger.warn('Auto version enabled for ${path}');
+    logger.warn(`Auto version enabled for ${path}`);
   }
 
   /**
@@ -249,7 +249,7 @@ export class VersioningService {
     if (timer) {
       clearInterval(timer);
       this.autoVersionTimers.delete(path);
-      logger.warn('Auto version disabled for ${path}');
+      logger.warn(`Auto version disabled for ${path}`);
     }
   }
 
@@ -269,7 +269,7 @@ export class VersioningService {
         await db.delete(this.DB_STORE, version.id);
       }
 
-      logger.warn('Cleaned up ${toDelete.length} old versions for ${path}');
+      logger.warn(`Cleaned up ${toDelete.length} old versions for ${path}`);
     }
   }
 

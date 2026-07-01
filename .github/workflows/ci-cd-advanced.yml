@@ -59,7 +59,7 @@ jobs:
 
       - name: Annotate test results
         if: failure()
-        uses: dorny/test-reporter@v1
+        uses: dorny/test-reporter@v3
         with:
           name: YYC3 Tests
           path: junit.xml

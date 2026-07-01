@@ -61,7 +61,7 @@ jobs:
         
     - name: Upload SARIF results
       if: always()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: codeql-sarif-${{ matrix.language }}
         path: sarif-results
@@ -105,7 +105,7 @@ jobs:
       
     - name: Upload scan results
       if: always()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: trufflehog-results
         path: trufflehog-output.json
